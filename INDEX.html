@@ -105,6 +105,17 @@
         #pay-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .pay-btn.selected { background: var(--primary) !important; color: white !important; }
         .search-item.selected { background: #f1f5f9; border-left: 4px solid var(--primary); }
+
+        /* --- ESTILOS DE IMPRESSÃO --- */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { 
+                position: absolute; left: 0; top: 0; width: 80mm; 
+                font-family: 'Courier New', Courier, monospace; font-size: 12px; color: black;
+            }
+        }
+        #print-area { display: none; }
     </style>
 </head>
 <body>
@@ -118,15 +129,31 @@
         </div>
     </div>
 
+    <div id="print-area">
+        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+            <h2 style="margin: 0;">MT VARIEDADES</h2>
+            <p>Obrigado pela preferência!</p>
+        </div>
+        <div id="print-items"></div>
+        <div style="border-top: 1px dashed #000; padding-top: 5px; text-align: right; margin-top: 10px;">
+            <h3 id="print-total">TOTAL: R$ 0,00</h3>
+            <p id="print-method"></p>
+        </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+            <p id="print-date"></p>
+            <p>*** CUPOM NÃO FISCAL ***</p>
+        </div>
+    </div>
+
     <aside id="sidebar">
         <div class="logo">MT VARIEDADES</div>
-        <button class="nav-link active" onclick="nav('pdv')">🛒 Venda Rápida</button>
-        <button class="nav-link" onclick="nav('estoque')">📦 Estoque</button>
-        <button class="nav-link" onclick="nav('historico')">📊 Faturamento</button>
-        <button class="nav-link" onclick="nav('fiado')">🤝 Devedores</button>
-        <button class="nav-link" onclick="nav('cadastro')">✨ Cadastrar Item</button>
-        <button class="nav-link" onclick="nav('backup')">🛡️ Backup</button>
-        <button class="nav-link" onclick="nav('ajustes')">🎨 Visual</button>
+        <button class="nav-link active" onclick="nav('pdv', this)">🛒 Venda Rápida</button>
+        <button class="nav-link" onclick="nav('estoque', this)">📦 Estoque</button>
+        <button class="nav-link" onclick="nav('historico', this)">📊 Faturamento</button>
+        <button class="nav-link" onclick="nav('fiado', this)">🤝 Devedores</button>
+        <button class="nav-link" onclick="nav('cadastro', this)">✨ Cadastrar Item</button>
+        <button class="nav-link" onclick="nav('backup', this)">🛡️ Backup</button>
+        <button class="nav-link" onclick="nav('ajustes', this)">🎨 Visual</button>
 
         <div class="dev-footer">
             Desenvolvido por:<br>
@@ -149,7 +176,7 @@
         <section id="pg-pdv" class="page active">
             <div style="display: grid; grid-template-columns: 1fr 350px; gap: 25px;">
                 <div class="card">
-                    <input type="text" class="search-box" id="pos-search" placeholder="Leitor ou busca..." oninput="autoAddCheck(this.value)" onkeyup="handleSearchInput(event)">
+                    <input type="text" class="search-box" id="pos-search" placeholder="Leitor ou busca..." onkeyup="handleSearchInput(event)">
                     <div id="pos-results" style="position:absolute; background:white; width:40%; z-index:100; border-radius:12px; box-shadow: var(--shadow); border: 1px solid var(--border);"></div>
                     <table>
                         <thead><tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Total</th><th>#</th></tr></thead>
@@ -183,7 +210,7 @@
                 </div>
                 <div class="card" style="border-left: 4px solid var(--success); margin:0;">
                     <small>LUCRO ESTIMADO</small>
-                    <h2 id="fat-lucro">R$ 0,00</h2>
+                    <h2 id="fat-clucro">R$ 0,00</h2>
                 </div>
             </div>
             <div class="card">
@@ -252,7 +279,7 @@
         let selectedPayIdx = 0;
         let descontoTotal = 0;
         let idleSeconds = 0;
-        let lastEnterTime = 0; // Novo controle de tempo para Enter Duplo
+        let lastEnterTime = 0;
 
         const saver = document.getElementById('screensaver');
         function resetTimer() { idleSeconds = 0; saver.style.display = 'none'; }
@@ -270,22 +297,18 @@
             if (idleSeconds >= 30 && cart.length === 0) saver.style.display = 'flex';
         }, 1000);
 
-        saver.onclick = resetTimer;
-
-        function nav(id) {
+        function nav(id, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('pg-' + id).classList.add('active');
+            const target = document.getElementById('pg-' + id);
+            if (target) target.classList.add('active');
+            
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if(event) event.currentTarget.classList.add('active');
+            if (element) element.classList.add('active');
+            
             if(id === 'pdv') setTimeout(() => document.getElementById('pos-search').focus(), 100);
             if(id === 'estoque') renderStock();
             if(id === 'historico') renderHistory();
             if(id === 'fiado') renderDebts();
-        }
-
-        // --- CORREÇÃO: LEITOR NÃO ABRE MAIS O PAGAMENTO SOZINHO ---
-        function autoAddCheck(val) {
-            // Função limpa para evitar disparos acidentais durante a leitura do código
         }
 
         function handleSearchInput(e) {
@@ -298,36 +321,16 @@
             
             if (e.key === "Enter") {
                 const currentTime = new Date().getTime();
-
-                // 1. Lógica de Enter Duplo com campo vazio para finalizar
                 if (val === "" && cart.length > 0) {
-                    if (currentTime - lastEnterTime < 500) {
-                        openPayModal();
-                        lastEnterTime = 0;
-                    } else {
-                        lastEnterTime = currentTime;
-                    }
+                    if (currentTime - lastEnterTime < 500) { openPayModal(); lastEnterTime = 0; } 
+                    else { lastEnterTime = currentTime; }
                     return;
                 }
-
-                // 2. Se houver seleção visual (setas), adiciona o item
-                if (selectedIdx > -1 && items[selectedIdx]) {
-                    items[selectedIdx].click();
-                    lastEnterTime = 0;
-                    return;
-                } 
-
-                // 3. Busca por código (leitor) ou nome exato
+                if (selectedIdx > -1 && items[selectedIdx]) { items[selectedIdx].click(); lastEnterTime = 0; return; } 
                 const p = prods.find(x => x.id === val || x.nome.toLowerCase() === val.toLowerCase());
-                if (p) {
-                    addToCart(p.id);
-                    searchInput.value = ""; 
-                    document.getElementById('pos-results').innerHTML = "";
-                    lastEnterTime = 0; // Evita que o enter final do leitor seja contado para o pagamento
-                }
+                if (p) { addToCart(p.id); searchInput.value = ""; document.getElementById('pos-results').innerHTML = ""; lastEnterTime = 0; }
                 return;
             }
-            
             selectedIdx = -1;
             doSearch(val);
         }
@@ -379,6 +382,15 @@
             for (let i = 0; i < btns.length; i++) btns[i].classList.toggle('selected', i === selectedPayIdx);
         }
 
+        function imprimirCupom(venda) {
+            const itemsArea = document.getElementById('print-items');
+            itemsArea.innerHTML = venda.items.split(', ').map(it => `<div>${it}</div>`).join('');
+            document.getElementById('print-total').innerText = `TOTAL: R$ ${venda.t.toFixed(2)}`;
+            document.getElementById('print-method').innerText = `Forma: ${venda.type}`;
+            document.getElementById('print-date').innerText = venda.d;
+            setTimeout(() => { window.print(); }, 200);
+        }
+
         async function completeSale(type) {
             let cli = 'Geral';
             if(type === 'Fiado') {
@@ -399,9 +411,19 @@
                 const d = debts.find(x => x.nome.toLowerCase() === cli.toLowerCase());
                 if(d) d.valor += final; else debts.push({ nome: cli, valor: final });
             }
-            sales.push({ d: new Date().toLocaleString(), items: items.join(', '), t: final, l: luc - descontoTotal, type: type });
+            const vendaObj = { d: new Date().toLocaleString(), items: items.join(', '), t: final, l: luc - descontoTotal, type: type };
+            sales.push(vendaObj);
             cart = []; descontoTotal = 0; save(); renderCart(); closeModal();
-            Swal.fire({ icon: 'success', title: 'Venda Concluída!', text: `Total: R$ ${final.toFixed(2)}`, timer: 2000, showConfirmButton: false });
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Venda Concluída!',
+                text: `Total: R$ ${final.toFixed(2)}`,
+                showCancelButton: true,
+                confirmButtonText: '🖨️ Imprimir Nota',
+                cancelButtonText: 'Fechar',
+                confirmButtonColor: '#6366f1'
+            }).then((res) => { if(res.isConfirmed) imprimirCupom(vendaObj); });
         }
 
         async function aplicarDesconto() {
@@ -431,10 +453,10 @@
             let b = 0, l = 0;
             document.getElementById('hist-list').innerHTML = sales.slice().reverse().map((s, i) => {
                 b += s.t; l += s.l;
-                return `<tr><td>${s.d}</td><td style="font-size:0.7rem">${s.items}</td><td>${s.t.toFixed(2)}</td><td>${s.type}</td><td><button onclick="sales.splice(${sales.length-1-i},1);save();renderHistory()" style="color:red; background:none; border:none;">X</button></td></tr>`;
+                return `<tr><td>${s.d}</td><td style="font-size:0.7rem">${s.items}</td><td>${s.t.toFixed(2)}</td><td>${s.type}</td><td><button onclick="imprimirCupom(sales[${sales.length-1-i}])" style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:8px;"><i class="fas fa-print"></i></button><button onclick="sales.splice(${sales.length-1-i},1);save();renderHistory()" style="color:red; background:none; border:none; cursor:pointer">X</button></td></tr>`;
             }).join('');
             document.getElementById('fat-bruto').innerText = `R$ ${b.toFixed(2)}`;
-            document.getElementById('fat-lucro').innerText = `R$ ${l.toFixed(2)}`;
+            document.getElementById('fat-clucro').innerText = `R$ ${l.toFixed(2)}`;
         }
 
         function renderDebts() {
