@@ -111,9 +111,14 @@
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { 
-                position: absolute; left: 0; top: 0; width: 80mm; 
-                font-family: 'Courier New', Courier, monospace; font-size: 12px; color: black;
+                display: block !important;
+                position: absolute; left: 0; top: 0; 
+                width: 72mm; 
+                font-family: 'Courier New', Courier, monospace; 
+                font-size: 12px; color: black;
+                padding: 10px;
             }
+            @page { margin: 0; }
         }
         #print-area { display: none; }
     </style>
@@ -131,17 +136,21 @@
 
     <div id="print-area">
         <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
-            <h2 style="margin: 0;">MT VARIEDADES</h2>
-            <p>Obrigado pela preferência!</p>
+            <h2 style="margin: 0; font-size: 16px;">MT VARIEDADES</h2>
+            <p style="font-size: 9px; margin-top: 5px;">Av. Belo Horizonte, 467 - Lontra, MG</p>
+            <p style="font-size: 9px;">CEP: 39437-000</p>
+            <p style="font-size: 10px; margin-top: 5px; font-weight: bold;">Comprovante de Venda Não Fiscal</p>
         </div>
-        <div id="print-items"></div>
-        <div style="border-top: 1px dashed #000; padding-top: 5px; text-align: right; margin-top: 10px;">
-            <h3 id="print-total">TOTAL: R$ 0,00</h3>
-            <p id="print-method"></p>
+        <div id="print-info" style="font-size: 10px; margin-bottom: 10px;"></div>
+        <div id="print-items" style="margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 5px;"></div>
+        <div style="text-align: right; margin-top: 5px;">
+            <h3 id="print-total" style="font-size: 14px;">TOTAL: R$ 0,00</h3>
+            <p id="print-method" style="font-size: 10px;"></p>
         </div>
-        <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+        <div style="text-align: center; margin-top: 20px; font-size: 9px;">
             <p id="print-date"></p>
-            <p>*** CUPOM NÃO FISCAL ***</p>
+            <p style="margin-top: 5px;">Obrigado pela preferência!</p>
+            <p>Desenvolvido por @alissonnxss</p>
         </div>
     </div>
 
@@ -382,12 +391,14 @@
             for (let i = 0; i < btns.length; i++) btns[i].classList.toggle('selected', i === selectedPayIdx);
         }
 
-        function imprimirCupom(venda) {
-            const itemsArea = document.getElementById('print-items');
-            itemsArea.innerHTML = venda.items.split(', ').map(it => `<div>${it}</div>`).join('');
+        // LÓGICA DE IMPRESSÃO
+        function imprimirCupom(venda, cliente = 'Geral') {
+            document.getElementById('print-info').innerHTML = `<b>Data:</b> ${venda.d}<br><b>Cliente:</b> ${cliente}`;
+            document.getElementById('print-items').innerHTML = venda.items.split(', ').map(it => `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>${it}</span></div>`).join('');
             document.getElementById('print-total').innerText = `TOTAL: R$ ${venda.t.toFixed(2)}`;
-            document.getElementById('print-method').innerText = `Forma: ${venda.type}`;
+            document.getElementById('print-method').innerText = `Forma de Pagamento: ${venda.type}`;
             document.getElementById('print-date').innerText = venda.d;
+            
             setTimeout(() => { window.print(); }, 200);
         }
 
@@ -420,10 +431,10 @@
                 title: 'Venda Concluída!',
                 text: `Total: R$ ${final.toFixed(2)}`,
                 showCancelButton: true,
-                confirmButtonText: '🖨️ Imprimir Nota',
+                confirmButtonText: '🖨️ Imprimir Cupom',
                 cancelButtonText: 'Fechar',
                 confirmButtonColor: '#6366f1'
-            }).then((res) => { if(res.isConfirmed) imprimirCupom(vendaObj); });
+            }).then((res) => { if(res.isConfirmed) imprimirCupom(vendaObj, cli); });
         }
 
         async function aplicarDesconto() {
