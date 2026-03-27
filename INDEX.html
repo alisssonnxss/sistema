@@ -113,10 +113,10 @@
             #print-area { 
                 position: absolute; left: 0; top: 0; width: 80mm; 
                 font-family: 'Courier New', Courier, monospace; 
-                font-size: 14px; /* Aumentado para melhor legibilidade */
+                font-size: 14px;
                 color: black;
                 line-height: 1.2;
-                transform: scale(1.1); /* Escala leve para preencher melhor o papel 80mm */
+                transform: scale(1.1);
                 transform-origin: top left;
             }
             @page { margin: 0; }
@@ -138,7 +138,8 @@
     <div id="print-area">
         <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
             <h2 style="margin: 0;">MT VARIEDADES</h2>
-            <p style="font-weight: bold; margin: 5px 0;">Tel: 38 9736-1083</p>
+            <p style="font-weight: bold; margin: 2px 0;">Tel: 38 9736-1083</p>
+            <p style="font-size: 11px; margin: 2px 0;">Av. Belo Horizonte, 467 - Lontra, MG</p>
             <p>Obrigado pela preferência!</p>
         </div>
         <div id="print-items" style="margin-bottom: 10px;"></div>
@@ -206,9 +207,63 @@
             </div>
         </section>
 
-        <section id="pg-estoque" class="page"><div class="card"><table><thead><tr><th>ID</th><th>Nome</th><th>Custo</th><th>Venda</th><th>Estoque</th><th>#</th></tr></thead><tbody id="stock-list"></tbody></table></div></section>
-        <section id="pg-historico" class="page"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;"><div class="card" style="border-left: 4px solid var(--primary); margin:0;"><small>BRUTO TOTAL</small><h2 id="fat-bruto">R$ 0,00</h2></div><div class="card" style="border-left: 4px solid var(--success); margin:0;"><small>LUCRO ESTIMADO</small><h2 id="fat-clucro">R$ 0,00</h2></div></div><div class="card"><table><thead><tr><th>Data</th><th>Itens</th><th>Total</th><th>Tipo</th><th>#</th></tr></thead><tbody id="hist-list"></tbody></table></div></section>
-        <section id="pg-fiado" class="page"><div class="card"><h3 style="margin-bottom: 15px;">🤝 Devedores</h3><table><thead><tr><th>Cliente</th><th>Dívida</th><th>Ações</th></tr></thead><tbody id="debt-list"></tbody></table></div></section>
+        <section id="pg-estoque" class="page">
+            <div class="card">
+                <input type="text" class="search-box" id="stock-search" placeholder="Pesquisar produto no estoque..." onkeyup="renderStock()">
+                <table><thead><tr><th>ID</th><th>Nome</th><th>Custo R$</th><th>Venda R$</th><th>Estoque</th><th>#</th></tr></thead><tbody id="stock-list"></tbody></table>
+            </div>
+        </section>
+        
+        <section id="pg-historico" class="page">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="card" style="border-left: 4px solid var(--primary); margin:0;">
+                    <small>VALOR FILTRADO</small>
+                    <h2 id="fat-bruto">R$ 0,00</h2>
+                </div>
+                <div class="card" style="border-left: 4px solid var(--success); margin:0;">
+                    <small>VENDA HOJE (RESET 00:00)</small>
+                    <h2 id="fat-hoje">R$ 0,00</h2>
+                </div>
+            </div>
+            <div class="card">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <select id="filter-period" class="search-box" style="width: 150px; margin: 0;" onchange="renderHistory()">
+                        <option value="dia">Hoje</option>
+                        <option value="semana">Semana</option>
+                        <option value="mes">Mês</option>
+                        <option value="ano">Ano</option>
+                        <option value="tudo">Tudo</option>
+                    </select>
+                    <input type="date" id="filter-date" class="search-box" style="width: 180px; margin: 0;" onchange="renderHistory()">
+                    <input type="text" id="filter-product" class="search-box" style="flex: 1; margin: 0;" placeholder="Pesquisar produto nas vendas..." onkeyup="renderHistory()">
+                </div>
+                <h3 style="margin-bottom: 15px;">📅 Vendas por Dia (Clique para detalhes)</h3>
+                <table>
+                    <thead><tr><th>Data</th><th>Total do Dia</th><th>Ação</th></tr></thead>
+                    <tbody id="daily-list"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">📝 Últimas Vendas (Detalhado)</h3>
+                <input type="text" id="last-sales-search" class="search-box" placeholder="Buscar nas últimas vendas (itens ou valor)..." onkeyup="renderHistory()">
+                <table>
+                    <thead><tr><th>Data/Hora</th><th>Itens</th><th>Total</th><th>Tipo</th><th>#</th></tr></thead>
+                    <tbody id="hist-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="pg-fiado" class="page">
+            <div class="card">
+                <input type="text" class="search-box" id="debt-search" placeholder="Pesquisar devedor..." onkeyup="renderDebts()">
+                <h3 style="margin-bottom: 15px;">🤝 Devedores Ativos</h3>
+                <table>
+                    <thead><tr><th>Data/Hora</th><th>Cliente</th><th>Dívida</th><th>Ações</th></tr></thead>
+                    <tbody id="debt-list"></tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="pg-cadastro" class="page"><div class="card" style="max-width: 500px; margin: auto;"><h3 style="margin-bottom: 20px;">Novo Item</h3><input type="text" id="cad-nome" class="search-box" placeholder="Nome"><input type="text" id="cad-id" class="search-box" placeholder="Código/ID"><input type="number" id="cad-qtd" class="search-box" placeholder="Quantidade"><input type="number" id="cad-custo" class="search-box" placeholder="Custo R$"><input type="number" id="cad-venda" class="search-box" placeholder="Venda R$"><button class="btn btn-primary" style="width: 100%;" onclick="saveProd()">SALVAR PRODUTO</button></div></section>
         <section id="pg-backup" class="page"><div class="card" style="max-width: 400px; margin: auto; text-align: center;"><button class="btn btn-success" style="width: 100%; margin-bottom: 15px;" onclick="exportDados()">💾 BAIXAR BACKUP</button><button class="btn" style="width: 100%; background: #f1f5f9; color: #1e293b;" onclick="document.getElementById('importFile').click()">📂 RESTAURAR BACKUP</button><input type="file" id="importFile" style="display:none" onchange="importDados(event)"></div></section>
         <section id="pg-ajustes" class="page"><div class="card"><h3>Cor de Destaque</h3><div id="color-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap:15px; margin-top:20px;"></div></div></section>
@@ -251,7 +306,7 @@
             document.getElementById('live-date').innerText = dateStr;
             document.getElementById('saver-date').innerText = dateStr;
             idleSeconds++;
-            if (idleSeconds >= 30 && cart.length === 0) saver.style.display = 'flex';
+            if (idleSeconds >= 60 && cart.length === 0) saver.style.display = 'flex';
         }, 1000);
 
         function nav(id, element) {
@@ -320,7 +375,6 @@
             document.getElementById('desc-info').innerText = descontoTotal > 0 ? `Desconto: R$ ${descontoTotal.toFixed(2)}` : "";
         }
 
-        // --- PAGAMENTO E DINHEIRO ---
         function openPayModal() { document.getElementById('pay-modal').style.display = 'flex'; document.getElementById('pay-modal').focus(); selectedPayIdx = 0; updatePaySelection(); }
         function closeModal() { document.getElementById('pay-modal').style.display = 'none'; document.getElementById('pos-search').focus(); }
 
@@ -373,11 +427,9 @@
             for (let i = 0; i < btns.length; i++) btns[i].classList.toggle('selected', i === selectedPayIdx);
         }
 
-       // --- IMPRESSÃO E FINALIZAÇÃO ---
         function imprimirCupom(venda) {
+            if (!venda) return;
             const itemsArea = document.getElementById('print-items');
-            
-            // Monta a lista de itens com valor unitário
             itemsArea.innerHTML = venda.detalhesItens.map(it => `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
                     <span>${it.q}x ${it.nome}</span>
@@ -385,12 +437,13 @@
                 </div>
             `).join('');
             
-            // Preenche os valores financeiros
+            // Se for fiado pendente, o cupom mostra o valor real para o cliente, mas o sistema guarda faturamento 0
+            const valorExibir = venda.isFiadoPendente ? (venda.bruto - venda.desc) : venda.t;
+
             document.getElementById('print-bruto').innerText = `Subtotal: R$ ${venda.bruto.toFixed(2)}`;
             document.getElementById('print-desconto').innerText = `Desconto: R$ ${venda.desc.toFixed(2)}`;
-            document.getElementById('print-total').innerText = `TOTAL: R$ ${venda.t.toFixed(2)}`;
+            document.getElementById('print-total').innerText = `TOTAL: R$ ${valorExibir.toFixed(2)}`;
             
-            // Lógica de Troco no comprovante
             if(venda.type === 'Dinheiro') {
                 document.getElementById('print-pago').innerText = `Recebido: R$ ${venda.pago.toFixed(2)}`;
                 document.getElementById('print-troco').innerText = `Troco: R$ ${venda.troco.toFixed(2)}`;
@@ -402,20 +455,28 @@
             document.getElementById('print-method').innerText = `Forma: ${venda.type}`;
             document.getElementById('print-date').innerText = venda.d;
 
-            // Mostra a área de impressão momentaneamente para o navegador "ler" o conteúdo
             const area = document.getElementById('print-area');
             area.style.display = 'block';
-
-            // Pequeno atraso para garantir que o HTML foi renderizado antes de imprimir
-            setTimeout(() => {
-                window.print();
-                area.style.display = 'none'; // Esconde de volta após fechar a tela de impressão
-            }, 500);
+            setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
 
-            // Dispara impressão direta
-            window.print();
-        
+        function imprimirFechamentoDia(data, total, itens) {
+            const itemsArea = document.getElementById('print-items');
+            itemsArea.innerHTML = `<div style="font-weight:bold; margin-bottom:10px;">FECHAMENTO DO DIA: ${data}</div>`;
+            itemsArea.innerHTML += `<div style="font-size:12px;">Total de Vendas: ${itens}</div>`;
+            
+            document.getElementById('print-bruto').innerText = "";
+            document.getElementById('print-desconto').innerText = "";
+            document.getElementById('print-total').innerText = `TOTAL DIA: R$ ${total.toFixed(2)}`;
+            document.getElementById('print-pago').innerText = "";
+            document.getElementById('print-troco').innerText = "";
+            document.getElementById('print-method').innerText = "RESUMO DE CAIXA";
+            document.getElementById('print-date').innerText = new Date().toLocaleString();
+
+            const area = document.getElementById('print-area');
+            area.style.display = 'block';
+            setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
+        }
 
         async function completeSale(type, pago = 0, troco = 0) {
             let cli = 'Geral';
@@ -434,28 +495,41 @@
                 detalhesItens.push({q: c.q, nome: c.nome, v_un: c.venda});
             });
             let final = Math.max(0, brt - descontoTotal);
+            const dataAtual = new Date().toLocaleString('pt-BR');
+
+            // --- NOVA LÓGICA FIADO ---
+            let totalFaturamento = (type === 'Fiado') ? 0 : final; //
+            let lucroFaturamento = (type === 'Fiado') ? 0 : (luc - descontoTotal); //
+
             if(type === 'Fiado') {
-                const d = debts.find(x => x.nome.toLowerCase() === cli.toLowerCase());
-                if(d) d.valor += final; else debts.push({ nome: cli, valor: final });
+                debts.push({ 
+                    data: dataAtual, 
+                    nome: cli, 
+                    valor: final, 
+                    lucroOriginal: (luc - descontoTotal) // Guardamos para quando quitar
+                });
             }
+
             const vendaObj = { 
-                d: new Date().toLocaleString(), 
+                d: dataAtual, 
                 items: itemsTexto.join(', '), 
                 detalhesItens: detalhesItens,
-                t: final, 
+                t: totalFaturamento, // Zero no faturamento se for fiado
                 bruto: brt,
                 desc: descontoTotal,
-                l: luc - descontoTotal, 
+                l: lucroFaturamento, 
                 type: type,
                 pago: pago,
-                troco: troco
+                troco: troco,
+                isFiadoPendente: (type === 'Fiado') // Marcador de controle
             };
+
             sales.push(vendaObj);
             cart = []; descontoTotal = 0; save(); renderCart(); closeModal();
             
             Swal.fire({
                 icon: 'success',
-                title: 'Venda Concluída!',
+                title: type === 'Fiado' ? 'Anotado no Fiado!' : 'Venda Concluída!',
                 text: `Total: R$ ${final.toFixed(2)}`,
                 showCancelButton: true,
                 confirmButtonText: '🖨️ Imprimir',
@@ -484,21 +558,176 @@
         }
 
         function renderStock() {
-            document.getElementById('stock-list').innerHTML = prods.map((p,i) => `<tr><td>${p.id}</td><td><input type="text" value="${p.nome}" onchange="prods[i].nome=this.value;save()"></td><td>${p.custo}</td><td>${p.venda}</td><td><input type="number" value="${p.qtd}" onchange="prods[i].qtd=parseInt(this.value);save()"></td><td><button onclick="prods.splice(${i},1);save();renderStock()" style="color:red; background:none; border:none;">X</button></td></tr>`).join('');
+            const search = document.getElementById('stock-search').value.toLowerCase();
+            const filtered = prods.filter(p => p.nome.toLowerCase().includes(search) || p.id.includes(search));
+            
+            document.getElementById('stock-list').innerHTML = filtered.map((p) => {
+                const i = prods.indexOf(p);
+                return `<tr><td>${p.id}</td><td><input type="text" value="${p.nome}" onchange="prods[${i}].nome=this.value;save()"></td><td><input type="number" step="0.01" value="${p.custo}" onchange="prods[${i}].custo=parseFloat(this.value);save();renderStock()"></td><td><input type="number" step="0.01" value="${p.venda}" onchange="prods[${i}].venda=parseFloat(this.value);save();renderStock()"></td><td><input type="number" value="${p.qtd}" onchange="prods[${i}].qtd=parseInt(this.value);save()"></td><td><button onclick="prods.splice(${i},1);save();renderStock()" style="color:red; background:none; border:none; cursor:pointer">X</button></td></tr>`;
+            }).join('');
+        }
+
+        function deleteSale(indexInSales) {
+            Swal.fire({
+                title: 'Apagar Venda?',
+                text: "Iso removerá o registro permanentemente!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sim, apagar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sales.splice(indexInSales, 1);
+                    save();
+                    renderHistory();
+                    Swal.fire('Deletado!', 'Venda removida com sucesso.', 'success');
+                }
+            });
+        }
+
+        function showDayDetails(data) {
+            const diaSales = sales.filter(v => v.d.startsWith(data));
+            let resumo = `<div style="text-align:left; font-size:0.9rem;">`;
+            diaSales.forEach(v => {
+                const status = v.isFiadoPendente ? '<span style="color:red">[PENDENTE]</span>' : '';
+                resumo += `<p><strong>[${v.d.split(', ')[1]}]</strong> ${v.items} - R$ ${v.t.toFixed(2)} (${v.type}) ${status}</p><hr style="margin:5px 0; opacity:0.2;">`;
+            });
+            resumo += `</div>`;
+            
+            Swal.fire({
+                title: `Vendas de ${data}`,
+                html: resumo,
+                width: '600px',
+                confirmButtonText: 'Fechar'
+            });
         }
 
         function renderHistory() {
-            let b = 0, l = 0;
-            document.getElementById('hist-list').innerHTML = sales.slice().reverse().map((s, i) => {
-                b += s.t; l += s.l;
-                return `<tr><td>${s.d}</td><td style="font-size:0.7rem">${s.items}</td><td>${s.t.toFixed(2)}</td><td>${s.type}</td><td><button onclick="imprimirCupom(sales[${sales.length-1-i}])" style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:8px;"><i class="fas fa-print"></i></button><button onclick="sales.splice(${sales.length-1-i},1);save();renderHistory()" style="color:red; background:none; border:none; cursor:pointer">X</button></td></tr>`;
+            let totalFiltrado = 0, totalHoje = 0;
+            const agora = new Date();
+            const hojeLocalStr = agora.toLocaleDateString('pt-BR');
+            
+            const period = document.getElementById('filter-period').value;
+            const dateFilterInput = document.getElementById('filter-date').value;
+            const prodFilter = document.getElementById('filter-product').value.toLowerCase();
+            const lastSalesSearch = document.getElementById('last-sales-search').value.toLowerCase();
+            
+            const diasMap = {};
+
+            const filteredSales = sales.filter(s => {
+                const dataVendaStr = s.d.split(',')[0].trim();
+                const [dia, mes, ano] = dataVendaStr.split('/').map(Number);
+                const dataVendaObj = new Date(ano, mes - 1, dia);
+                dataVendaObj.setHours(0,0,0,0);
+                const hojeComparar = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+                
+                if (dataVendaStr === hojeLocalStr) {
+                    totalHoje += s.t;
+                }
+
+                let matches = true;
+                if (period === 'dia') matches = (dataVendaStr === hojeLocalStr);
+                else if (period === 'semana') {
+                    const diffDias = Math.floor((hojeComparar - dataVendaObj) / (1000 * 60 * 60 * 24));
+                    matches = diffDias >= 0 && diffDias <= 7;
+                }
+                else if (period === 'mes') matches = (mes - 1 === agora.getMonth() && ano === agora.getFullYear());
+                else if (period === 'ano') matches = (ano === agora.getFullYear());
+
+                if (dateFilterInput) {
+                    const [y, m, d] = dateFilterInput.split('-').map(Number);
+                    matches = (dia === d && mes === m && ano === y);
+                }
+                if (prodFilter) matches = matches && s.items.toLowerCase().includes(prodFilter);
+
+                return matches;
+            });
+
+            const lastSalesToRender = filteredSales.filter(s => 
+                s.items.toLowerCase().includes(lastSalesSearch) || 
+                s.t.toString().includes(lastSalesSearch) ||
+                s.type.toLowerCase().includes(lastSalesSearch)
+            );
+
+            document.getElementById('hist-list').innerHTML = lastSalesToRender.slice().reverse().map((s) => {
+                const originalIdx = sales.findIndex(x => x.d === s.d && x.t === s.t && x.items === s.items);
+                totalFiltrado += s.t;
+                const dataVenda = s.d.split(',')[0].trim();
+                diasMap[dataVenda] = (diasMap[dataVenda] || 0) + s.t;
+
+                return `<tr>
+                    <td>${s.d}</td>
+                    <td style="font-size:0.7rem">${s.items}</td>
+                    <td>R$ ${s.t.toFixed(2)}</td>
+                    <td>${s.type} ${s.isFiadoPendente ? '🔴' : ''}</td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="imprimirCupom(sales[${originalIdx}])" title="Imprimir" style="color:var(--primary); background:none; border:none; cursor:pointer;"><i class="fas fa-print"></i></button>
+                            <button onclick="deleteSale(${originalIdx})" title="Excluir" style="color:var(--danger); background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
             }).join('');
-            document.getElementById('fat-bruto').innerText = `R$ ${b.toFixed(2)}`;
-            document.getElementById('fat-clucro').innerText = `R$ ${l.toFixed(2)}`;
+
+            document.getElementById('daily-list').innerHTML = Object.keys(diasMap)
+                .sort((a, b) => {
+                    const [da, ma, aa] = a.split('/').map(Number);
+                    const [db, mb, ab] = b.split('/').map(Number);
+                    return new Date(ab, mb-1, db) - new Date(aa, ma-1, da);
+                })
+                .map(data => `
+                    <tr style="cursor:pointer" onclick="showDayDetails('${data}')">
+                        <td>${data}</td>
+                        <td><strong>R$ ${diasMap[data].toFixed(2)}</strong></td>
+                        <td>
+                            <button class="btn btn-primary" style="padding:5px 10px;" onclick="event.stopPropagation(); imprimirFechamentoDia('${data}', ${diasMap[data]}, ${sales.filter(v => v.d.startsWith(data)).length})">🖨️</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            document.getElementById('fat-bruto').innerText = `R$ ${totalFiltrado.toFixed(2)}`;
+            document.getElementById('fat-hoje').innerText = `R$ ${totalHoje.toFixed(2)}`;
+        }
+
+        // --- NOVA FUNÇÃO QUITAR DÍVIDA ---
+        function quitarDivida(index) {
+            const divida = debts[index];
+            
+            // Localiza a venda original no histórico para atualizar o faturamento
+            const vendaRelacionada = sales.find(v => v.d === divida.data && v.isFiadoPendente === true);
+            
+            if (vendaRelacionada) {
+                vendaRelacionada.t = divida.valor; // Agora entra no total do faturamento
+                vendaRelacionada.l = divida.lucroOriginal; // Agora entra no lucro
+                vendaRelacionada.type = "Fiado (Pago)";
+                vendaRelacionada.isFiadoPendente = false;
+            }
+
+            debts.splice(index, 1);
+            save();
+            renderDebts();
+            if(document.getElementById('pg-historico').classList.contains('active')) renderHistory();
+            
+            Swal.fire('Pago!', 'O valor agora consta no faturamento.', 'success');
         }
 
         function renderDebts() {
-            document.getElementById('debt-list').innerHTML = debts.map((d,i) => `<tr><td>${d.nome}</td><td>R$ ${d.valor.toFixed(2)}</td><td><button class="btn btn-success" style="padding:5px 10px;" onclick="debts.splice(${i},1);save();renderDebts()">QUITAR</button></td></tr>`).join('');
+            const search = document.getElementById('debt-search').value.toLowerCase();
+            const filtered = debts.filter(d => d.nome.toLowerCase().includes(search));
+            
+            document.getElementById('debt-list').innerHTML = filtered.map((d) => {
+                const i = debts.indexOf(d);
+                return `<tr>
+                    <td>${d.data || '---'}</td>
+                    <td>${d.nome}</td>
+                    <td>R$ ${d.valor.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-success" style="padding:5px 10px;" onclick="quitarDivida(${i})">QUITAR</button>
+                    </td>
+                </tr>`;
+            }).join('');
         }
 
         function exportDados() {
