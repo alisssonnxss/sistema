@@ -55,7 +55,7 @@
             color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 5px; margin-top: 8px; font-weight: 700;
         }
 
-        /* --- CONTENT --- */
+        
         #main { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
         .page { display: none; max-width: 1300px; margin: 0 auto; animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); }
         .page.active { display: block; }
@@ -71,7 +71,7 @@
         tr td:first-child { border-left: 1px solid var(--border); border-radius: var(--radius) 0 0 var(--radius); }
         tr td:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; }
 
-        /* --- INPUTS & BUTTONS PROFISSIONAIS --- */
+        
         .search-box { 
             width: 100%; padding: 16px 24px; border-radius: var(--radius); border: 2px solid #f1f5f9; 
             font-size: 1rem; margin-bottom: 25px; transition: 0.3s; background: #f8fafc; font-weight: 500;
@@ -89,7 +89,7 @@
         .btn-warning { background: var(--warning); color: white; }
         .btn-danger { background: var(--danger); color: white; }
 
-        /* --- ATUALIZAÇÃO --- */
+        /* --- ATUALIZAÇÃO 07/04 --- */
         .update-tag {
             position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; 
             padding: 8px 15px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; 
@@ -100,7 +100,7 @@
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- SWEETALERT CUSTOM --- */
+        
         .swal2-popup { border-radius: 20px !important; padding: 2em !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
         .swal2-title { font-weight: 800 !important; color: var(--text-main) !important; }
         .swal2-confirm { border-radius: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 0.8rem !important; }
@@ -132,7 +132,7 @@
 </head>
 <body>
 
-    <div class="update-tag"><span></span> Alisson: Monitoramento de Backup Ativado. 07/05 ⚡ </div>
+    <div class="update-tag"><span></span> Alisson: Atualizando venda por PIX qrcode. 21/05 ⚡ </div>
 
     <div id="backup-alert" style="display: none; position: fixed; top: 25px; right: 25px; width: 340px; background: white; border-left: 6px solid var(--danger); box-shadow: var(--shadow-lg); z-index: 9999; border-radius: 12px; padding: 20px; animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
         <div style="display: flex; gap: 15px; align-items: center;">
@@ -190,11 +190,11 @@
         <div class="logo">
             <img src="LOGO/LOGO MT.png" alt="Logo MT Variedades">
         </div>
-        <button class="nav-link active" onclick="nav('pdv', this)"><i class="fas fa-cash-register"></i> Venda Rápida</button>
+        <button class="nav-link active" onclick="nav('pdv', this)"><i class="fas fa-cash-register"></i> Realizar Venda</button>
         <button class="nav-link" onclick="nav('estoque', this)"><i class="fas fa-boxes-stacked"></i> Estoque</button>
         <button class="nav-link" onclick="nav('historico', this)"><i class="fas fa-chart-line"></i> Faturamento</button>
         <button class="nav-link" onclick="nav('fiado', this)"><i class="fas fa-handshake"></i> Devedores</button>
-        <button class="nav-link" onclick="nav('cadastro', this)"><i class="fas fa-plus-circle"></i> Novo Item</button>
+        <button class="nav-link" onclick="nav('cadastro', this)"><i class="fas fa-plus-circle"></i> Cadastrar Item</button>
         <button class="nav-link" onclick="nav('backup', this)"><i class="fas fa-database"></i> Backup</button>
         <button class="nav-link" onclick="nav('ajustes', this)"><i class="fas fa-palette"></i> Visual</button>
 
@@ -386,12 +386,12 @@
             document.getElementById('live-date').innerText = dateStr;
             document.getElementById('saver-date').innerText = dateStr;
 
-            // VERIFICAÇÃO ESPECÍFICA DAS 17:40
-            if (hrs === 17 && mins === 40 && !backupRealizadoNestaSessao) {
+            // HORA DO BACKUP ATUALIZAÇÃO DO DIA 07/05
+            if (hrs === 18 && mins === 00 && !backupRealizadoNestaSessao) {
                 const alerta = document.getElementById('backup-alert');
                 if (alerta.style.display !== 'block') {
-                    document.getElementById('backup-alert-title').innerText = "⏰ HORA DO BACKUP! (17:40)";
-                    document.getElementById('backup-alert-desc').innerText = "Horário de fechamento atingido. Realize o backup de segurança agora.";
+                    document.getElementById('backup-alert-title').innerText = "⏰ 18:00H - HORA DO BACKUP!";
+                    document.getElementById('backup-alert-desc').innerText = "Horário de fechamento atingido.  Evite perder seus dados, Realize o backup de segurança agora.";
                     alerta.style.display = 'block';
                     document.getElementById('backup-beep').play().catch(() => {});
                 }
@@ -407,7 +407,7 @@
                 document.getElementById('backup-alert').style.display = 'block';
                 document.getElementById('backup-beep').play().catch(() => {});
             }
-        }, 120000);
+        }, 500000);
 
         function irParaBackup() {
             nav('backup', document.querySelector('button[onclick*="backup"]'));
@@ -703,7 +703,7 @@
         function renderDebts() {
             const search = document.getElementById('debt-search').value.toLowerCase();
             const filtered = debts.filter(d => d.nome.toLowerCase().includes(search));
-            document.getElementById('debt-list').innerHTML = filtered.map((d, i) => `<tr><td>${d.data}</td><td><strong>${d.nome}</strong></td><td><strong style="color:var(--danger)">R$ ${d.valor.toFixed(2)}</strong></td><td style="text-align:right;"><button class="btn btn-success" style="padding:8px 15px; font-size:0.7rem;" onclick="quitarDivida(${debts.indexOf(d)})"><i class="fas fa-check"></i> RECEBER</button></td></tr>`).join('');
+            document.getElementById('debt-list').innerHTML = filtered.map((d, i) => `<tr><td>${d.data}</td><td><strong>${d.nome}</strong></td><td><strong style="color:var(--danger)">R$ ${d.valor.toFixed(2)}</strong></td><td style="text-align:right;"><button class="btn btn-success" style="padding:8px 15px; font-size:0.7rem;" onclick="quitarDivida(${debts.indexOf(d)})"><i class="fas fa-check"></i>quitar</button></td></tr>`).join('');
         }
 
         function exportDados() {
