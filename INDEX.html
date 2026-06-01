@@ -386,11 +386,11 @@
             document.getElementById('live-date').innerText = dateStr;
             document.getElementById('saver-date').innerText = dateStr;
 
-            // HORA DO BACKUP ATUALIZAÇÃO DO DIA 07/05
-            if (hrs === 18 && mins === 00 && !backupRealizadoNestaSessao) {
+            // HORA DO BACKUP ATUALIZAÇÃO DO DIA 07/05 BACKUP AS 17H DIARIOS
+            if (hrs === 17 && mins === 00 && !backupRealizadoNestaSessao) {
                 const alerta = document.getElementById('backup-alert');
                 if (alerta.style.display !== 'block') {
-                    document.getElementById('backup-alert-title').innerText = "⏰ 18:00H - HORA DO BACKUP!";
+                    document.getElementById('backup-alert-title').innerText = "⏰ 17:00H - HORA DO BACKUP!";
                     document.getElementById('backup-alert-desc').innerText = "Horário de fechamento atingido.  Evite perder seus dados, Realize o backup de segurança agora.";
                     alerta.style.display = 'block';
                     document.getElementById('backup-beep').play().catch(() => {});
@@ -399,9 +399,9 @@
 
             idleSeconds++;
             if (idleSeconds >= 60 && cart.length === 0) saver.style.display = 'flex';
-        }, 1000);
+        }, 5000);
 
-        // Alerta insistente a cada 2 minutos se não houver backup
+        // Alerta insistente a cada 5 minutos se não houver backup (FORÇANDO O BACKUP)
         setInterval(() => {
             if (!backupRealizadoNestaSessao) {
                 document.getElementById('backup-alert').style.display = 'block';
