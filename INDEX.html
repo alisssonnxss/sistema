@@ -606,7 +606,7 @@
                 if(diferencaDias === 3 || diferencaDias === 2 || diferencaDias === 1) {
                     lancarNotificacaoToast(`rec-${c.id}`, 'Conta Próxima do Vencimento!', `A conta "${c.nome}" de R$ ${c.valor.toFixed(2)} vence em ${diferencaDias} dias (${dia}/${mes}).`, 'warning');
                 } else if(diferencaDias === 0) {
-                    lancarNotificacaoToast(`rec-${c.id}`, 'Conta Vence HOJE!', `Atenção! a conta "${c.nome}" no valor de R$ ${c.valor.toFixed(2)} vence hoje. Evite Pendências!`, 'warning');
+                    lancarNotificacaoToast(`rec-${c.id}`, 'Conta Vence HOJE!', `Atenção! sua conta de "${c.nome}" no valor de R$ ${c.valor.toFixed(2)} vence hoje. Evite Pendências!`, 'warning');
                 } else if(diferencaDias < 0) {
                     lancarNotificacaoToast(`rec-${c.id}`, 'CONTA ATRASADA! 🚨', `A conta "${c.nome}" de R$ ${c.valor.toFixed(2)} está vencida desde o dia ${dia}/${mes}. Pague o quanto antes.`, 'danger');
                 }
