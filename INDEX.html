@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -55,7 +56,6 @@
             color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 5px; margin-top: 8px; font-weight: 700;
         }
 
-        
         #main { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
         .page { display: none; max-width: 1300px; margin: 0 auto; animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); }
         .page.active { display: block; }
@@ -71,7 +71,6 @@
         tr td:first-child { border-left: 1px solid var(--border); border-radius: var(--radius) 0 0 var(--radius); }
         tr td:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; }
 
-        
         .search-box { 
             width: 100%; padding: 16px 24px; border-radius: var(--radius); border: 2px solid #f1f5f9; 
             font-size: 1rem; margin-bottom: 25px; transition: 0.3s; background: #f8fafc; font-weight: 500;
@@ -89,18 +88,25 @@
         .btn-warning { background: var(--warning); color: white; }
         .btn-danger { background: var(--danger); color: white; }
 
-        /* --- ATUALIZAÇÃO 07/04 --- */
-        .update-tag {
-            position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; 
-            padding: 8px 15px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; 
-            display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-lg); z-index: 100; border: 1px solid rgba(255,255,255,0.1);
+        /* NOTIFICATIONS SYSTEM IN BOTTOM RIGHT */
+        #notification-container {
+            position: fixed; bottom: 20px; right: 20px; width: 350px; 
+            display: flex; flex-direction: column; gap: 10px; z-index: 9999;
+            max-height: 80vh; overflow-y: auto; pointer-events: none;
         }
-        .update-tag span { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        .toast-notify {
+            background: white; border-radius: 12px; padding: 20px;
+            box-shadow: var(--shadow-lg); border-left: 6px solid var(--primary);
+            display: flex; gap: 15px; align-items: center; pointer-events: auto;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast-notify.danger { border-left-color: var(--danger); }
+        .toast-notify.warning { border-left-color: var(--warning); }
+        .toast-notify.success { border-left-color: var(--success); }
 
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        
         .swal2-popup { border-radius: 20px !important; padding: 2em !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
         .swal2-title { font-weight: 800 !important; color: var(--text-main) !important; }
         .swal2-confirm { border-radius: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 0.8rem !important; }
@@ -113,7 +119,7 @@
         }
         .saver-content img { width: 300px; margin-bottom: 20px; }
         
-        #pay-modal { 
+        #pay-modal, #pix-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); 
             display: none; align-items: center; justify-content: center; z-index: 1000; 
@@ -132,27 +138,10 @@
 </head>
 <body>
 
-    <div class="update-tag"><span></span> Alisson: Atualizando venda por PIX qrcode. 21/05 ⚡ </div>
-
-    <div id="backup-alert" style="display: none; position: fixed; top: 25px; right: 25px; width: 340px; background: white; border-left: 6px solid var(--danger); box-shadow: var(--shadow-lg); z-index: 9999; border-radius: 12px; padding: 20px; animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div style="background: #fee2e2; color: #ef4444; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                <i class="fas fa-database"></i>
-            </div>
-            <div style="flex: 1;">
-                <h4 id="backup-alert-title" style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); margin-bottom: 2px;">Segurança dos Dados!</h4>
-                <p id="backup-alert-desc" style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.3;">Você ainda não realizou o backup de hoje. Proteja seu faturamento.</p>
-            </div>
-            <button onclick="document.getElementById('backup-alert').style.display = 'none'" style="background: none; border: none; color: var(--text-sub); cursor: pointer; padding: 5px;"><i class="fas fa-times"></i></button>
-        </div>
-        <button class="btn btn-danger" style="width: 100%; margin-top: 15px; padding: 12px; font-size: 0.75rem;" onclick="irParaBackup()">
-            <i class="fas fa-shield-virus"></i> REALIZAR BACKUP AGORA
-        </button>
-    </div>
+    <div id="notification-container"></div>
 
     <audio id="backup-beep" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
     
-
     <div id="screensaver">
         <div class="saver-content">
             <img src="LOGO/LOGO MT.png" alt="Logo MT Variedades">
@@ -194,6 +183,7 @@
         <button class="nav-link" onclick="nav('estoque', this)"><i class="fas fa-boxes-stacked"></i> Estoque</button>
         <button class="nav-link" onclick="nav('historico', this)"><i class="fas fa-chart-line"></i> Faturamento</button>
         <button class="nav-link" onclick="nav('fiado', this)"><i class="fas fa-handshake"></i> Devedores</button>
+        <button class="nav-link" onclick="nav('receber', this)"><i class="fas fa-receipt"></i> Contas a Pagar</button>
         <button class="nav-link" onclick="nav('cadastro', this)"><i class="fas fa-plus-circle"></i> Cadastrar Item</button>
         <button class="nav-link" onclick="nav('backup', this)"><i class="fas fa-database"></i> Backup</button>
         <button class="nav-link" onclick="nav('ajustes', this)"><i class="fas fa-palette"></i> Visual</button>
@@ -201,9 +191,7 @@
         <div class="dev-footer">
             Desenvolvido por:<br>
             <strong>Alisson Santos Rodrigues</strong>
-            <a href="https://instagram.com/alissonnxss" target="_blank">
-                <i class="fab fa-instagram"></i> @alissonnxss
-            </a>
+            <a href="https://instagram.com/alissonnxss" target="_blank"><i class="fab fa-instagram"></i> @alissonnxss</a>
         </div>
     </aside>
 
@@ -279,10 +267,49 @@
         </section>
 
         <section id="pg-fiado" class="page">
+            <div class="card" style="margin-bottom: 25px;">
+                <h3 style="margin-bottom: 20px; font-weight: 800;"><i class="fas fa-user-plus" style="color: var(--primary);"></i> Cadastrar Novo Devedor</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <input type="text" id="debt-new-name" class="search-box" style="flex: 2; margin: 0;" placeholder="Nome do Cliente (Devedor)">
+                    <input type="number" step="0.01" id="debt-new-value" class="search-box" style="flex: 1; margin: 0;" placeholder="Valor Inicial R$">
+                    <button class="btn btn-primary" style="padding: 0 30px; height: 56px;" onclick="cadastrarDevedorManual()"><i class="fas fa-save"></i> Cadastrar</button>
+                </div>
+            </div>
             <div class="card">
                 <input type="text" class="search-box" id="debt-search" placeholder="Procurar devedor..." onkeyup="renderDebts()">
-                <h3 style="margin-bottom: 20px; font-weight: 800;"><i class="fas fa-user-clock" style="color: var(--warning);"></i> Contas a Receber</h3>
-                <table><thead><tr><th>Data</th><th>Cliente</th><th>Dívida</th><th style="text-align: right;">Ação</th></tr></thead><tbody id="debt-list"></tbody></table>
+                <h3 style="margin-bottom: 20px; font-weight: 800;"><i class="fas fa-user-clock" style="color: var(--warning);"></i> Contas dos Devedores (Fiado)</h3>
+                <table>
+                    <thead><tr><th>Data Lançamento</th><th>Cliente</th><th>Dívida Atual</th><th style="text-align: right;">Ações</th></tr></thead>
+                    <tbody id="debt-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="pg-receber" class="page">
+            <div class="card" style="margin-bottom: 25px;">
+                <h3 style="margin-bottom: 20px; font-weight: 800;"><i class="fas fa-plus-circle" style="color: var(--primary);"></i> Cadastrar Conta a Pagar</h3>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 5px;">DESCRIÇÃO DA CONTA</label>
+                        <input type="text" id="rec-nome" class="search-box" style="margin:0;" placeholder="Ex: Fornecedor de Capinhas, Luz, Aluguel">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 5px;">VALOR R$</label>
+                        <input type="number" step="0.01" id="rec-valor" class="search-box" style="margin:0;" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 5px;">VENCIMENTO</label>
+                        <input type="date" id="rec-data" class="search-box" style="margin:0;">
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;" onclick="salvarContaReceber()"><i class="fas fa-save"></i> AGENDAR LEMBRETE DE CONTA</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 20px; font-weight: 800;"><i class="fas fa-list-ol" style="color: var(--primary);"></i> Minhas Próximas Obrigações</h3>
+                <table>
+                    <thead><tr><th>Conta / Fornecedor</th><th>Valor R$</th><th>Data Vencimento</th><th>Situação / Status</th><th style="text-align: right;">Ação</th></tr></thead>
+                    <tbody id="receber-list"></tbody>
+                </table>
             </div>
         </section>
 
@@ -346,8 +373,8 @@
             <button class="btn pay-btn" style="width:100%; background:#f8fafc; border:2px solid #f1f5f9; margin-bottom:12px; color: #1e293b;" onclick="completeSale('Cartão')">
                 <span><i class="fas fa-credit-card" style="color: #6366f1;"></i> Cartão Débito/Crédito</span> <i class="fas fa-chevron-right"></i>
             </button>
-            <button class="btn pay-btn" style="width:100%; background:#f8fafc; border:2px solid #f1f5f9; margin-bottom:12px; color: #1e293b;" onclick="completeSale('Pix')">
-                <span><i class="fas fa-bolt" style="color: #06b6d4;"></i> Pix Transferência</span> <i class="fas fa-chevron-right"></i>
+            <button class="btn pay-btn" style="width:100%; background:#f8fafc; border:2px solid #f1f5f9; margin-bottom:12px; color: #1e293b;" onclick="iniciarVendaPix()">
+                <span><i class="fas fa-bolt" style="color: #06b6d4;"></i> Pix QR Code / Cópia e Cola</span> <i class="fas fa-chevron-right"></i>
             </button>
             <button class="btn pay-btn" style="width:100%; background:#fffbeb; border:2px solid #fde68a; color:#92400e; margin-bottom:12px;" onclick="completeSale('Fiado')">
                 <span><i class="fas fa-handshake" style="color: #f59e0b;"></i> Anotar na Conta (Fiado)</span> <i class="fas fa-chevron-right"></i>
@@ -357,10 +384,35 @@
         </div>
     </div>
 
+    <div id="pix-modal" style="display: none;">
+        <div class="card" style="width: 400px; text-align: center; border: none; box-shadow: var(--shadow-lg);">
+            <h2 style="margin-bottom: 5px; font-weight: 800;"><i class="fas fa-bolt" style="color: #06b6d4;"></i> Pagamento Pix</h2>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 20px;">Escaneie o QR Code abaixo</p>
+            
+            <div id="qrcode-container" style="display: flex; justify-content: center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border);"></div>
+            
+            <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px;">
+                <small style="font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 5px;">VALOR DA VENDA</small>
+                <strong id="pix-modal-value" style="font-size: 1.6rem; color: var(--success);">R$ 0,00</strong>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px; padding: 15px;" onclick="copiarPixCopiaCola()">
+                <i class="fas fa-copy"></i> COPIAR PIX COPIA E COLA
+            </button>
+            
+            <button class="btn btn-success" style="width: 100%; margin-bottom: 10px; padding: 15px;" id="btn-confirmar-pix">
+                <i class="fas fa-check"></i> JÁ FOI PAGO / CONFIRMAR
+            </button>
+            
+            <button class="btn" style="background:none; color:var(--danger); font-size: 0.75rem; text-decoration: underline;" onclick="fecharModalPix()">Cancelar e Voltar</button>
+        </div>
+    </div>
+
     <script>
         let prods = JSON.parse(localStorage.getItem('mt_p')) || [];
         let sales = JSON.parse(localStorage.getItem('mt_v')) || [];
         let debts = JSON.parse(localStorage.getItem('mt_f')) || [];
+        let receber = JSON.parse(localStorage.getItem('mt_r')) || []; 
         let cart = [];
         let selectedIdx = -1;
         let selectedPayIdx = 0;
@@ -368,10 +420,53 @@
         let idleSeconds = 0;
         let lastEnterTime = 0;
         let backupRealizadoNestaSessao = false;
+        let pixCopiaColaAtual = "";
+
+        const CHAVE_PIX_TELEFONE = "38997361083"; 
+        const NOME_BENEFICIARIO = "FARLEY"; 
+        const CIDADE_BENEFICIARIO = "LONTRA"; 
 
         const saver = document.getElementById('screensaver');
         function resetTimer() { idleSeconds = 0; saver.style.display = 'none'; }
-        window.onload = () => { document.onmousemove = resetTimer; document.onkeypress = resetTimer; document.onclick = resetTimer; document.onscroll = resetTimer; };
+        window.onload = () => { 
+            document.onmousemove = resetTimer; document.onkeypress = resetTimer; 
+            document.onclick = resetTimer; document.onscroll = resetTimer; 
+            verificarContasENotificar(); 
+        };
+
+        function lancarNotificacaoToast(id, titulo, descricao, tipo = "primary", acaoClick = null, labelBotao = "") {
+            const container = document.getElementById('notification-container');
+            if (document.getElementById('toast-' + id)) return; 
+            
+            const div = document.createElement('div');
+            div.id = 'toast-' + id;
+            div.className = `toast-notify ${tipo}`;
+            
+            let icon = '<i class="fas fa-bell"></i>';
+            if(tipo === 'danger') icon = '<i class="fas fa-exclamation-triangle"></i>';
+            if(tipo === 'warning') icon = '<i class="fas fa-clock"></i>';
+            if(tipo === 'success') icon = '<i class="fas fa-check-circle"></i>';
+
+            div.innerHTML = `
+                <div style="background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink:0;">
+                    ${icon}
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-weight: 800; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">${titulo}</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.3;">${descricao}</p>
+                    ${labelBotao ? `<button class="btn btn-${tipo}" style="padding: 6px 12px; font-size: 0.65rem; margin-top: 8px; width:100%; text-transform:uppercase;" id="btn-act-${id}">${labelBotao}</button>` : ''}
+                </div>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: var(--text-sub); cursor: pointer; align-self: flex-start;"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(div);
+
+            if(labelBotao && acaoClick) {
+                document.getElementById(`btn-act-${id}`).onclick = function() {
+                    acaoClick();
+                    div.remove();
+                };
+            }
+        }
 
         setInterval(() => {
             const now = new Date();
@@ -386,32 +481,38 @@
             document.getElementById('live-date').innerText = dateStr;
             document.getElementById('saver-date').innerText = dateStr;
 
-            // HORA DO BACKUP ATUALIZAÇÃO DO DIA 07/05 BACKUP AS 17H DIARIOS
-            if (hrs === 17 && mins === 00 && !backupRealizadoNestaSessao) {
-                const alerta = document.getElementById('backup-alert');
-                if (alerta.style.display !== 'block') {
-                    document.getElementById('backup-alert-title').innerText = "⏰ 17:00H - HORA DO BACKUP!";
-                    document.getElementById('backup-alert-desc').innerText = "Horário de fechamento atingido.  Evite perder seus dados, Realize o backup de segurança agora.";
-                    alerta.style.display = 'block';
-                    document.getElementById('backup-beep').play().catch(() => {});
-                }
+            if (hrs === 17 && mins === 0 && !backupRealizadoNestaSessao) {
+                lancarNotificacaoToast(
+                    'backup-17', 
+                    '⏰ 17:00H - HORA DO BACKUP!', 
+                    'Horário de fechamento atingido. Evite perder seus dados, realize o backup de segurança agora.', 
+                    'danger', 
+                    irParaBackup, 
+                    'REALIZAR BACKUP AGORA'
+                );
+                document.getElementById('backup-beep').play().catch(() => {});
             }
 
             idleSeconds++;
             if (idleSeconds >= 60 && cart.length === 0) saver.style.display = 'flex';
         }, 5000);
 
-        // Alerta insistente a cada 5 minutos se não houver backup (FORÇANDO O BACKUP)
         setInterval(() => {
             if (!backupRealizadoNestaSessao) {
-                document.getElementById('backup-alert').style.display = 'block';
+                lancarNotificacaoToast(
+                    'backup-loop', 
+                    'Segurança dos Dados!', 
+                    'Você ainda não realizou o backup de hoje. Proteja seu faturamento.', 
+                    'danger', 
+                    irParaBackup, 
+                    'REALIZAR BACKUP AGORA'
+                );
                 document.getElementById('backup-beep').play().catch(() => {});
             }
-        }, 500000);
+        }, 300000); 
 
         function irParaBackup() {
             nav('backup', document.querySelector('button[onclick*="backup"]'));
-            document.getElementById('backup-alert').style.display = 'none';
         }
 
         function nav(id, element) {
@@ -425,6 +526,91 @@
             if(id === 'estoque') renderStock();
             if(id === 'historico') renderHistory();
             if(id === 'fiado') renderDebts();
+            if(id === 'receber') renderContasReceber();
+        }
+
+        function salvarContaReceber() {
+            const nome = document.getElementById('rec-nome').value.trim();
+            const valor = parseFloat(document.getElementById('rec-valor').value);
+            const data = document.getElementById('rec-data').value;
+
+            if(!nome || !valor || !data) {
+                Swal.fire('Erro', 'Preencha todos os campos da conta a pagar!', 'error');
+                return;
+            }
+
+            receber.push({ id: Date.now(), nome, valor, data, pago: false });
+            localStorage.setItem('mt_r', JSON.stringify(receber));
+            
+            document.getElementById('rec-nome').value = '';
+            document.getElementById('rec-valor').value = '';
+            document.getElementById('rec-data').value = '';
+            
+            Swal.fire('Agendada!', 'A conta foi guardada e o sistema irá te notificar conforme o vencimento.', 'success');
+            renderContasReceber();
+            verificarContasENotificar();
+        }
+
+        function renderContasReceber() {
+            document.getElementById('receber-list').innerHTML = receber.map((c, idx) => {
+                const [ano, mes, dia] = c.data.split('-');
+                const dataFormatada = `${dia}/${mes}/${ano}`;
+                
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
+                const dataVenc = new Date(ano, mes-1, dia); dataVenc.setHours(0,0,0,0);
+                
+                let tagStatus = `<span style="font-size:0.7rem; padding:4px 8px; border-radius:4px; background:#e2e8f0; font-weight:700; color:#475569;">PENDENTE</span>`;
+                if(c.pago) {
+                    tagStatus = `<span style="font-size:0.7rem; padding:4px 8px; border-radius:4px; background:#d1fae5; font-weight:700; color:#065f46;">PAGO ✅</span>`;
+                } else if(hoje > dataVenc) {
+                    tagStatus = `<span style="font-size:0.7rem; padding:4px 8px; border-radius:4px; background:#fee2e2; font-weight:700; color:#991b1b;">ATRASADO 🚨</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${c.nome}</strong></td>
+                        <td><strong>R$ ${c.valor.toFixed(2)}</strong></td>
+                        <td>${dataFormatada}</td>
+                        <td>${tagStatus}</td>
+                        <td style="text-align:right;">
+                            ${!c.pago ? `<button class="btn btn-success" style="padding:6px 12px; font-size:0.7rem; margin-right:5px;" onclick="marcarContaPaga(${c.id})"><i class="fas fa-check"></i> Pagar</button>` : ''}
+                            <button class="btn btn-danger" style="padding:6px 12px; font-size:0.7rem;" onclick="removerContaReceber(${c.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function marcarContaPaga(id) {
+            const item = receber.find(x => x.id === id);
+            if(item) { item.pago = true; localStorage.setItem('mt_r', JSON.stringify(receber)); renderContasReceber(); }
+        }
+
+        function removerContaReceber(id) {
+            receber = receber.filter(x => x.id !== id);
+            localStorage.setItem('mt_r', JSON.stringify(receber));
+            renderContasReceber();
+        }
+
+        function verificarContasENotificar() {
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            
+            receber.forEach(c => {
+                if(c.pago) return;
+                const [ano, mes, dia] = c.data.split('-');
+                const dataVenc = new Date(ano, mes-1, dia); dataVenc.setHours(0,0,0,0);
+                
+                const diferencaTempo = dataVenc - hoje;
+                const diferencaDias = Math.ceil(diferencaTempo / (1000 * 60 * 60 * 24));
+
+                if(diferencaDias === 3 || diferencaDias === 2 || diferencaDias === 1) {
+                    lancarNotificacaoToast(`rec-${c.id}`, 'Conta Próxima do Vencimento!', `A conta "${c.nome}" de R$ ${c.valor.toFixed(2)} vence em ${diferencaDias} dias (${dia}/${mes}).`, 'warning');
+                } else if(diferencaDias === 0) {
+                    lancarNotificacaoToast(`rec-${c.id}`, 'Conta Vence HOJE!', `Atenção! O boleto da conta "${c.nome}" no valor de R$ ${c.valor.toFixed(2)} vence hoje. Evite juros!`, 'warning');
+                } else if(diferencaDias < 0) {
+                    lancarNotificacaoToast(`rec-${c.id}`, 'CONTA ATRASADA! 🚨', `A conta "${c.nome}" de R$ ${c.valor.toFixed(2)} está vencida desde o dia ${dia}/${mes}. Pague o quanto antes.`, 'danger');
+                }
+            });
         }
 
         function handleSearchInput(e) {
@@ -487,39 +673,46 @@
         function openPayModal() { document.getElementById('pay-modal').style.display = 'flex'; document.getElementById('pay-modal').focus(); selectedPayIdx = 0; updatePaySelection(); }
         function closeModal() { document.getElementById('pay-modal').style.display = 'none'; document.getElementById('pos-search').focus(); }
 
-        async function iniciarVendaDinheiro() {
+        function apiKeyFix() {} // Placeholder para futuras integrações
+
+        function iniciarVendaPix() {
             let totalVenda = 0;
             cart.forEach(c => totalVenda += c.venda * c.q);
             totalVenda = Math.max(0, totalVenda - descontoTotal);
+            if (totalVenda <= 0) { Swal.fire('Erro', 'O valor da venda deve ser maior que zero.', 'error'); return; }
+            document.getElementById('pay-modal').style.display = 'none';
+            document.getElementById('pix-modal').style.display = 'flex';
+            document.getElementById('pix-modal-value').innerText = `R$ ${totalVenda.toFixed(2)}`;
+            pixCopiaColaAtual = gerarPayloadPix(CHAVE_PIX_TELEFONE, totalVenda, NOME_BENEFICIARIO, CIDADE_BENEFICIARIO);
+            const container = document.getElementById('qrcode-container'); container.innerHTML = "";
+            new QRCode(container, { text: pixCopiaColaAtual, width: 200, height: 200, colorDark: "#1e293b", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+            document.getElementById('btn-confirmar-pix').onclick = function() { fecharModalPix(); completeSale('Pix'); };
+        }
 
-            const { value: valorPago } = await Swal.fire({
-                title: 'Pagamento em Dinheiro',
-                text: `Total a pagar: R$ ${totalVenda.toFixed(2)}`,
-                input: 'number',
-                inputLabel: 'Qual o valor entregue pelo cliente?',
-                inputPlaceholder: '0.00',
-                showCancelButton: true,
-                confirmButtonText: 'Calcular Troco',
-                confirmButtonColor: '#10b981',
-                inputAttributes: { step: '0.01' }
-            });
+        function fecharModalPix() { document.getElementById('pix-modal').style.display = 'none'; document.getElementById('pos-search').focus(); }
+        function copiarPixCopiaCola() { navigator.clipboard.writeText(pixCopiaColaAtual).then(() => { Swal.fire({ icon: 'success', title: 'Copiado!', text: 'Código Pix Copia e Cola salvo na área de transferência.', timer: 1500, showConfirmButton: false }); }); }
 
+        function gerarPayloadPix(chave, valor, nome, cidade) {
+            const limparTexto = (txt) => { return txt.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9 ]/gi, "").toUpperCase().replace(/\s+/g, " ").trim(); };
+            const nomeLimpo = limparTexto(nome); const cidadeLimpa = limparTexto(cidade);
+            const formatarCampo = (id, valorCampo) => { const tam = String(valorCampo.length).padStart(2, '0'); return id + tam + valorCampo; };
+            const valorStr = valor.toFixed(2);
+            const gui = formatarCampo('00', 'br.gov.bcb.pix'); const key = formatarCampo('01', chave); const infoAdicional = gui + key;
+            let payload = [ formatarCampo('00', '01'), formatarCampo('26', infoAdicional), formatarCampo('52', '0000'), formatarCampo('53', '986'), formatarCampo('54', valorStr), formatarCampo('58', 'BR'), formatarCampo('59', nomeLimpo), formatarCampo('60', cidadeLimpa), formatarCampo('62', formatarCampo('05', '***')) ].join('');
+            payload += '6304'; let crc = 0xFFFF;
+            for (let i = 0; i < payload.length; i++) { crc ^= (payload.charCodeAt(i) << 8); for (let j = 0; j < 8; j++) { if (crc & 0x8000) crc = ((crc << 1) ^ 0x1021) & 0xFFFF; else crc = (crc << 1) & 0xFFFF; } }
+            return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        async function iniciarVendaDinheiro() {
+            let totalVenda = 0; cart.forEach(c => totalVenda += c.venda * c.q); totalVenda = Math.max(0, totalVenda - descontoTotal);
+            const { value: valorPago } = await Swal.fire({ title: 'Pagamento em Dinheiro', text: `Total a pagar: R$ ${totalVenda.toFixed(2)}`, input: 'number', inputLabel: 'Qual o valor entregue pelo cliente?', inputPlaceholder: '0.00', showCancelButton: true, confirmButtonText: 'Calcular Troco', confirmButtonColor: '#10b981', inputAttributes: { step: '0.01' } });
             if (valorPago !== undefined && valorPago !== "") {
                 const pago = parseFloat(valorPago);
-                if (pago < totalVenda) {
-                    Swal.fire('Valor Insuficiente', 'O valor pago é menor que o total da venda.', 'error');
-                } else {
+                if (pago < totalVenda) { Swal.fire('Valor Insuficiente', 'O valor pago é menor que o total da venda.', 'error'); } 
+                else {
                     const troco = pago - totalVenda;
-                    Swal.fire({
-                        title: `Troco: R$ ${troco.toFixed(2)}`,
-                        text: 'Deseja finalizar e imprimir o cupom?',
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sim, Finalizar',
-                        confirmButtonColor: '#10b981'
-                    }).then((result) => {
-                        if (result.isConfirmed) completeSale('Dinheiro', pago, troco);
-                    });
+                    Swal.fire({ title: `Troco: R$ ${troco.toFixed(2)}`, text: 'Deseja finalizar e imprimir o cupom?', icon: 'success', showCancelButton: true, confirmButtonText: 'Sim, Finalizar', confirmButtonColor: '#10b981' }).then((result) => { if (result.isConfirmed) completeSale('Dinheiro', pago, troco); });
                 }
             }
         }
@@ -546,62 +739,34 @@
             }
             let brt = 0, luc = 0, itemsTexto = [], detalhesItens = [];
             cart.forEach(c => {
-                const o = prods.find(x => x.id === c.id);
-                if(o) o.qtd -= c.q;
-                brt += c.venda * c.q;
-                luc += (c.venda - (o ? o.custo : 0)) * c.q;
-                itemsTexto.push(`${c.q}x ${c.nome}`);
-                detalhesItens.push({q: c.q, nome: c.nome, v_un: c.venda});
+                const o = prods.find(x => x.id === c.id); if(o) o.qtd -= c.q;
+                brt += c.venda * c.q; luc += (c.venda - (o ? o.custo : 0)) * c.q;
+                itemsTexto.push(`${c.q}x ${c.nome}`); detalhesItens.push({q: c.q, nome: c.nome, v_un: c.venda});
             });
             let final = Math.max(0, brt - descontoTotal);
             const dataAtual = new Date().toLocaleString('pt-BR');
-
             let totalFaturamento = (type === 'Fiado') ? 0 : final;
             let lucroFaturamento = (type === 'Fiado') ? 0 : (luc - descontoTotal);
 
-            if(type === 'Fiado') {
-                debts.push({ data: dataAtual, nome: cli, valor: final, lucroOriginal: (luc - descontoTotal) });
-            }
+            if(type === 'Fiado') debts.push({ data: dataAtual, nome: cli, valor: final, lucroOriginal: (luc - descontoTotal) });
 
-            const vendaObj = { 
-                d: dataAtual, items: itemsTexto.join(', '), detalhesItens: detalhesItens,
-                t: totalFaturamento, bruto: brt, desc: descontoTotal,
-                l: lucroFaturamento, type: type, pago: pago, troco: troco, isFiadoPendente: (type === 'Fiado') 
-            };
-
-            sales.push(vendaObj);
-            cart = []; descontoTotal = 0; save(); renderCart(); closeModal();
-            
-            Swal.fire({
-                icon: 'success', title: 'Venda Concluída!',
-                text: `Valor Total: R$ ${final.toFixed(2)}`,
-                showCancelButton: true, confirmButtonText: '🖨️ Imprimir Cupom',
-                cancelButtonText: 'Fechar', confirmButtonColor: '#6366f1'
-            }).then((res) => { if(res.isConfirmed) imprimirCupom(vendaObj); });
+            const vendaObj = { d: dataAtual, items: itemsTexto.join(', '), detalhesItens, t: totalFaturamento, bruto: brt, desc: descontoTotal, l: lucroFaturamento, type, pago, troco, isFiadoPendente: (type === 'Fiado') };
+            sales.push(vendaObj); cart = []; descontoTotal = 0; save(); renderCart(); closeModal();
+            Swal.fire({ icon: 'success', title: 'Venda Concluída!', text: `Valor Total: R$ ${final.toFixed(2)}`, showCancelButton: true, confirmButtonText: '🖨️ Imprimir Cupom', cancelButtonText: 'Fechar', confirmButtonColor: '#6366f1' }).then((res) => { if(res.isConfirmed) imprimirCupom(vendaObj); });
         }
 
         function imprimirCupom(venda) {
             if (!venda) return;
             const itemsArea = document.getElementById('print-items');
-            itemsArea.innerHTML = venda.detalhesItens.map(it => `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                    <span>${it.q}x ${it.nome}</span>
-                    <span>R$ ${it.v_un.toFixed(2)}</span>
-                </div>
-            `).join('');
+            itemsArea.innerHTML = venda.detalhesItens.map(it => `<div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>${it.q}x ${it.nome}</span><span>R$ ${it.v_un.toFixed(2)}</span></div>`).join('');
             const valorExibir = venda.isFiadoPendente ? (venda.bruto - venda.desc) : venda.t;
             document.getElementById('print-bruto').innerText = `Subtotal: R$ ${venda.bruto.toFixed(2)}`;
             document.getElementById('print-desconto').innerText = `Desconto: R$ ${venda.desc.toFixed(2)}`;
             document.getElementById('print-total').innerText = `TOTAL: R$ ${valorExibir.toFixed(2)}`;
-            if(venda.type === 'Dinheiro') {
-                document.getElementById('print-pago').innerText = `Recebido: R$ ${venda.pago.toFixed(2)}`;
-                document.getElementById('print-troco').innerText = `Troco: R$ ${venda.troco.toFixed(2)}`;
-            } else { document.getElementById('print-pago').innerText = ""; document.getElementById('print-troco').innerText = ""; }
-            document.getElementById('print-method').innerText = `Forma: ${venda.type}`;
-            document.getElementById('print-date').innerText = venda.d;
-            const area = document.getElementById('print-area');
-            area.style.display = 'block';
-            setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
+            if(venda.type === 'Dinheiro') { document.getElementById('print-pago').innerText = `Recebido: R$ ${venda.pago.toFixed(2)}`; document.getElementById('print-troco').innerText = `Troco: R$ ${venda.troco.toFixed(2)}`; } 
+            else { document.getElementById('print-pago').innerText = ""; document.getElementById('print-troco').innerText = ""; }
+            document.getElementById('print-method').innerText = `Forma: ${venda.type}`; document.getElementById('print-date').innerText = venda.d;
+            const area = document.getElementById('print-area'); area.style.display = 'block'; setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
 
         async function aplicarDesconto() {
@@ -610,17 +775,9 @@
         }
 
         function saveProd() {
-            const p = { 
-                id: document.getElementById('cad-id').value, 
-                nome: document.getElementById('cad-nome').value, 
-                custo: parseFloat(document.getElementById('cad-custo').value) || 0, 
-                venda: parseFloat(document.getElementById('cad-venda').value) || 0, 
-                qtd: parseInt(document.getElementById('cad-qtd').value) || 0 
-            };
+            const p = { id: document.getElementById('cad-id').value, nome: document.getElementById('cad-nome').value, custo: parseFloat(document.getElementById('cad-custo').value) || 0, venda: parseFloat(document.getElementById('cad-venda').value) || 0, qtd: parseInt(document.getElementById('cad-qtd').value) || 0 };
             if(!p.id || !p.nome) { Swal.fire('Erro', 'Por favor, identifique o produto e o código.', 'error'); return; }
-            prods.push(p); save(); 
-            Swal.fire('Cadastrado!', 'O produto foi adicionado ao estoque.', 'success');
-            document.querySelectorAll('#pg-cadastro input').forEach(i => i.value = '');
+            prods.push(p); save(); Swal.fire('Cadastrado!', 'O produto foi adicionado ao estoque.', 'success'); document.querySelectorAll('#pg-cadastro input').forEach(i => i.value = '');
         }
 
         function save() {
@@ -638,25 +795,17 @@
             }).join('');
         }
 
-        function deleteProd(i) {
-            Swal.fire({ title: 'Remover Produto?', text: "Esta ação não pode ser desfeita!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Sim, excluir' }).then((res) => { if(res.isConfirmed) { prods.splice(i, 1); save(); renderStock(); } });
-        }
+        function deleteProd(i) { Swal.fire({ title: 'Remover Produto?', text: "Esta action não pode ser desfeita!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Sim, excluir' }).then((res) => { if(res.isConfirmed) { prods.splice(i, 1); save(); renderStock(); } }); }
 
         function renderHistory() {
-            let totalFiltrado = 0, totalHoje = 0;
-            const agora = new Date();
-            const hojeLocalStr = agora.toLocaleDateString('pt-BR');
-            const period = document.getElementById('filter-period').value;
-            const dateFilterInput = document.getElementById('filter-date').value;
-            const prodFilter = document.getElementById('filter-product').value.toLowerCase();
-            const lastSalesSearch = document.getElementById('last-sales-search').value.toLowerCase();
+            let totalFiltrado = 0, totalHoje = 0; const agora = new Date(); const hojeLocalStr = agora.toLocaleDateString('pt-BR');
+            const period = document.getElementById('filter-period').value; const dateFilterInput = document.getElementById('filter-date').value;
+            const prodFilter = document.getElementById('filter-product').value.toLowerCase(); const lastSalesSearch = document.getElementById('last-sales-search').value.toLowerCase();
             const diasMap = {};
 
             const filteredSales = sales.filter(s => {
-                const dataVendaStr = s.d.split(',')[0].trim();
-                const [dia, mes, ano] = dataVendaStr.split('/').map(Number);
-                const dataVendaObj = new Date(ano, mes - 1, dia);
-                dataVendaObj.setHours(0,0,0,0);
+                const dataVendaStr = s.d.split(',')[0].trim(); const [dia, mes, ano] = dataVendaStr.split('/').map(Number);
+                const dataVendaObj = new Date(ano, mes - 1, dia); dataVendaObj.setHours(0,0,0,0);
                 const hojeComparar = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
                 if (dataVendaStr === hojeLocalStr) totalHoje += s.t;
                 let matches = true;
@@ -670,10 +819,8 @@
             });
 
             document.getElementById('hist-list').innerHTML = filteredSales.filter(s => s.items.toLowerCase().includes(lastSalesSearch)).slice().reverse().map((s) => {
-                const originalIdx = sales.findIndex(x => x.d === s.d && x.t === s.t);
-                totalFiltrado += s.t;
-                const dataVenda = s.d.split(',')[0].trim();
-                diasMap[dataVenda] = (diasMap[dataVenda] || 0) + s.t;
+                const originalIdx = sales.findIndex(x => x.d === s.d && x.t === s.t); totalFiltrado += s.t;
+                const dataVenda = s.d.split(',')[0].trim(); diasMap[dataVenda] = (diasMap[dataVenda] || 0) + s.t;
                 return `<tr><td>${s.d}</td><td style="font-size:0.75rem; color:var(--text-sub);">${s.items}</td><td><strong>R$ ${s.t.toFixed(2)}</strong></td><td><span style="font-size:0.7rem; padding:4px 8px; border-radius:4px; background:#f1f5f9; font-weight:700;">${s.type}</span></td><td style="text-align:right;"><button onclick="imprimirCupom(sales[${originalIdx}])" style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:10px;"><i class="fas fa-print"></i></button><button onclick="deleteSale(${originalIdx})" style="color:var(--danger); background:none; border:none; cursor:pointer;"><i class="fas fa-trash-can"></i></button></td></tr>`;
             }).join('');
 
@@ -682,8 +829,68 @@
             document.getElementById('fat-hoje').innerText = `R$ ${totalHoje.toFixed(2)}`;
         }
 
-        function deleteSale(i) {
-            Swal.fire({ title: 'Excluir Venda?', text: "O registro será removido do faturamento!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Sim, excluir' }).then((res) => { if(res.isConfirmed) { sales.splice(i, 1); save(); renderHistory(); } });
+        function deleteSale(i) { Swal.fire({ title: 'Excluir Venda?', text: "O registro será removido do faturamento!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Sim, excluir' }).then((res) => { if(res.isConfirmed) { sales.splice(i, 1); save(); renderHistory(); } }); }
+
+        function cadastrarDevedorManual() {
+            const nome = document.getElementById('debt-new-name').value.trim();
+            const valor = parseFloat(document.getElementById('debt-new-value').value);
+            
+            if(!nome || isNaN(valor) || valor <= 0) {
+                Swal.fire('Campos inválidos', 'Preencha o nome do devedor e informe um valor maior que zero.', 'error');
+                return;
+            }
+
+            const dataAtual = new Date().toLocaleString('pt-BR');
+            debts.push({ data: dataAtual, nome: nome, valor: valor, lucroOriginal: 0 });
+            save();
+            
+            document.getElementById('debt-new-name').value = '';
+            document.getElementById('debt-new-value').value = '';
+            
+            Swal.fire('Sucesso!', 'Devedor cadastrado com sucesso!', 'success');
+            renderDebts();
+        }
+
+        async function modificarValorDevedor(index) {
+            const d = debts[index];
+            const { value: novoValor } = await Swal.fire({
+                title: 'Modificar Valor',
+                text: `Alterando o saldo de: ${d.nome}`,
+                input: 'number',
+                inputLabel: 'Digite o novo valor total devido:',
+                inputValue: d.valor,
+                showCancelButton: true,
+                inputAttributes: { step: '0.01' }
+            });
+
+            if (novoValor !== undefined && novoValor !== "") {
+                debts[index].valor = parseFloat(novoValor);
+                save();
+                renderDebts();
+                Swal.fire('Modificado!', 'O valor foi atualizado.', 'success');
+            }
+        }
+
+        function imprimirNotaDevedor(index) {
+            const d = debts[index];
+            const itemsArea = document.getElementById('print-items');
+            itemsArea.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:10px; text-align:center; border-bottom:1px dashed #000; padding-bottom:5px;">COMPROVANTE DE DÉBITO (FIADO)</div>
+                <p><strong>Devedor:</strong> ${d.nome}</p>
+                <p><strong>Lançamento:</strong> ${d.data}</p>
+                <p style="margin-top:10px;">O cliente acima citado possui pendências financeiras registradas neste estabelecimento comercial.</p>
+            `;
+            document.getElementById('print-bruto').innerText = "";
+            document.getElementById('print-desconto').innerText = "";
+            document.getElementById('print-total').innerText = `VALOR DEVIDO: R$ ${d.valor.toFixed(2)}`;
+            document.getElementById('print-pago').innerText = "";
+            document.getElementById('print-troco').innerText = "";
+            document.getElementById('print-method').innerText = "REGISTRO INTERNO FIADO";
+            document.getElementById('print-date').innerText = new Date().toLocaleString();
+            
+            const area = document.getElementById('print-area');
+            area.style.display = 'block';
+            setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
 
         function quitarDivida(index) {
@@ -694,6 +901,8 @@
                 vendaRelacionada.l = divida.lucroOriginal;
                 vendaRelacionada.type = "Fiado (Pago)";
                 vendaRelacionada.isFiadoPendente = false;
+            } else {
+                sales.push({ d: new Date().toLocaleString('pt-BR'), items: `Quitação manual de ${divida.nome}`, detalhesItens: [{q:1, nome:`Quitação ${divida.nome}`, v_un: divida.valor}], t: divida.valor, bruto: divida.valor, desc: 0, l: divida.valor, type: "Fiado (Pago)", pago: divida.valor, troco: 0, isFiadoPendente: false });
             }
             debts.splice(index, 1); save(); renderDebts();
             if(document.getElementById('pg-historico').classList.contains('active')) renderHistory();
@@ -703,27 +912,39 @@
         function renderDebts() {
             const search = document.getElementById('debt-search').value.toLowerCase();
             const filtered = debts.filter(d => d.nome.toLowerCase().includes(search));
-            document.getElementById('debt-list').innerHTML = filtered.map((d, i) => `<tr><td>${d.data}</td><td><strong>${d.nome}</strong></td><td><strong style="color:var(--danger)">R$ ${d.valor.toFixed(2)}</strong></td><td style="text-align:right;"><button class="btn btn-success" style="padding:8px 15px; font-size:0.7rem;" onclick="quitarDivida(${debts.indexOf(d)})"><i class="fas fa-check"></i>quitar</button></td></tr>`).join('');
+            document.getElementById('debt-list').innerHTML = filtered.map((d) => {
+                const globalIndex = debts.indexOf(d);
+                return `
+                    <tr>
+                        <td>${d.data}</td>
+                        <td><strong>${d.nome}</strong></td>
+                        <td><strong style="color:var(--danger)">R$ ${d.valor.toFixed(2)}</strong></td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-warning" style="padding:8px 12px; font-size:0.7rem; margin-right:4px; background:#f59e0b; color:white;" onclick="modificarValorDevedor(${globalIndex})"><i class="fas fa-edit"></i> Alterar</button>
+                            <button class="btn" style="padding:8px 12px; font-size:0.7rem; margin-right:4px; background:#64748b; color:white;" onclick="imprimirNotaDevedor(${globalIndex})"><i class="fas fa-print"></i> Imprimir</button>
+                            <button class="btn btn-success" style="padding:8px 12px; font-size:0.7rem;" onclick="quitarDivida(${globalIndex})"><i class="fas fa-check"></i> Quitar</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function exportDados() {
-            const b = new Blob([JSON.stringify({p:prods, v:sales, f:debts})], {type:'application/json'});
+            const b = new Blob([JSON.stringify({p:prods, v:sales, f:debts, r:receber})], {type:'application/json'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `BACKUP-MT-${new Date().toLocaleDateString()}.json`; a.click();
             backupRealizadoNestaSessao = true;
-            document.getElementById('backup-alert').style.display = 'none';
-            Swal.fire('Backup Concluído!', 'As notificações de backup foram pausadas.', 'success');
+            const bToast = document.getElementById('toast-backup-loop'); if(bToast) bToast.remove();
+            const bToast17 = document.getElementById('toast-backup-17'); if(bToast17) bToast17.remove();
+            Swal.fire('Backup Concluído!', 'As notificações de backup foram pausadas com segurança.', 'success');
         }
 
         function importDados(e) {
-            const r = new FileReader();
-            r.onload = (ev) => { const d = JSON.parse(ev.target.result); prods = d.p; sales = d.v; debts = d.f; save(); location.reload(); };
-            r.readAsText(e.target.files[0]);
+            const r = new FileReader(); r.onload = (ev) => { const d = JSON.parse(ev.target.result); prods = d.p || []; sales = d.v || []; debts = d.f || []; receber = d.r || []; localStorage.setItem('mt_r', JSON.stringify(receber)); save(); location.reload(); }; r.readAsText(e.target.files[0]);
         }
 
         const cols = ['#6366f1', '#10b981', '#f43f5e', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6', '#1e293b'];
         cols.forEach(c => {
-            const d = document.createElement('div');
-            d.style.height = '50px'; d.style.background = c; d.style.borderRadius = '12px'; d.style.cursor = 'pointer'; d.style.border = '3px solid white'; d.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            const d = document.createElement('div'); d.style.height = '50px'; d.style.background = c; d.style.borderRadius = '12px'; d.style.cursor = 'pointer'; d.style.border = '3px solid white'; d.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
             d.onclick = () => { document.documentElement.style.setProperty('--primary', c); localStorage.setItem('mt_t', c); };
             document.getElementById('color-grid').appendChild(d);
         });
@@ -732,16 +953,11 @@
         function imprimirFechamentoDia(data, total, itens) {
             const itemsArea = document.getElementById('print-items');
             itemsArea.innerHTML = `<div style="font-weight:bold; margin-bottom:10px; text-align:center;">RESUMO DE VENDAS</div><div style="font-size:12px;">Data: ${data}</div><div style="font-size:12px;">Total de Vendas: ${itens}</div>`;
-            document.getElementById('print-bruto').innerText = "";
-            document.getElementById('print-desconto').innerText = "";
+            document.getElementById('print-bruto').innerText = ""; document.getElementById('print-desconto').innerText = "";
             document.getElementById('print-total').innerText = `TOTAL DIA: R$ ${total.toFixed(2)}`;
-            document.getElementById('print-pago').innerText = "";
-            document.getElementById('print-troco').innerText = "";
-            document.getElementById('print-method').innerText = "FECHAMENTO DE CAIXA";
-            document.getElementById('print-date').innerText = new Date().toLocaleString();
-            const area = document.getElementById('print-area');
-            area.style.display = 'block';
-            setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
+            document.getElementById('print-pago').innerText = ""; document.getElementById('print-troco').innerText = "";
+            document.getElementById('print-method').innerText = "FECHAMENTO DE CAIRA"; document.getElementById('print-date').innerText = new Date().toLocaleString();
+            const area = document.getElementById('print-area'); area.style.display = 'block'; setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
     </script>
 </body>
