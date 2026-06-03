@@ -765,7 +765,7 @@
             document.getElementById('print-total').innerText = `TOTAL: R$ ${valorExibir.toFixed(2)}`;
             if(venda.type === 'Dinheiro') { document.getElementById('print-pago').innerText = `Recebido: R$ ${venda.pago.toFixed(2)}`; document.getElementById('print-troco').innerText = `Troco: R$ ${venda.troco.toFixed(2)}`; } 
             else { document.getElementById('print-pago').innerText = ""; document.getElementById('print-troco').innerText = ""; }
-            document.getElementById('print-method').innerText = `Forma PGT: ${venda.type}`; document.getElementById('print-date').innerText = venda.d;
+            document.getElementById('print-method').innerText = `Forma Pgt: ${venda.type}`; document.getElementById('print-date').innerText = venda.d;
             const area = document.getElementById('print-area'); area.style.display = 'block'; setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
 
