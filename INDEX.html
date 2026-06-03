@@ -956,7 +956,7 @@
             document.getElementById('print-bruto').innerText = ""; document.getElementById('print-desconto').innerText = "";
             document.getElementById('print-total').innerText = `TOTAL DIA: R$ ${total.toFixed(2)}`;
             document.getElementById('print-pago').innerText = ""; document.getElementById('print-troco').innerText = "";
-            document.getElementById('print-method').innerText = "FECHAMENTO DE CAIRA"; document.getElementById('print-date').innerText = new Date().toLocaleString();
+            document.getElementById('print-method').innerText = "FECHAMENTO DE CAIXA"; document.getElementById('print-date').innerText = new Date().toLocaleString();
             const area = document.getElementById('print-area'); area.style.display = 'block'; setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
     </script>
