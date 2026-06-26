@@ -126,12 +126,54 @@
         #screensaver { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-main); cursor: pointer; }
         
         #pay-modal, #pix-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.2); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        #edit-product-modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1200; padding: 20px; }
+        .edit-product-card { width: min(680px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; background: white; border-radius: 18px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25); border: 1px solid var(--border); }
+        .edit-product-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 25px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: white; z-index: 2; }
+        .edit-product-body { padding: 25px; }
+        .edit-product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .edit-product-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 25px; border-top: 1px solid var(--border); background: #f8fafc; }
+        .stock-actions { display: flex; justify-content: flex-end; gap: 7px; }
+        @media (max-width: 700px) { .edit-product-grid { grid-template-columns: 1fr; } .edit-product-footer { flex-direction: column-reverse; } .edit-product-footer .btn { width: 100%; } }
         .pay-btn { display: flex; justify-content: space-between; align-items: center; padding: 16px !important; text-align: left; width: 100%; margin-bottom: 10px; background: #f8fafc; border: 1px solid #e2e8f0; color: var(--text-main); }
         .pay-btn:hover { background: #f1f5f9; }
 
         .badge-stock { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
         .badge-stock.low { background: #fee2e2; color: #ef4444; }
         .badge-stock.normal { background: #e0f2fe; color: #0369a1; }
+
+
+
+        /* AJUSTES PARA USO EM COMPUTADOR */
+        @media (min-width: 1100px) {
+            #sidebar { width: 260px; padding: 22px 18px; }
+            #main { padding: 24px 30px 40px; }
+            .page { max-width: 1500px; }
+            .card { padding: 22px; }
+            header { min-height: 76px; }
+            table { table-layout: auto; }
+            th, td { vertical-align: middle; }
+            th:last-child, td:last-child { min-width: 105px; }
+            .stock-actions { align-items: center; justify-content: flex-end; min-width: 84px; }
+            .stock-actions .btn { flex: 0 0 36px; width: 36px; height: 36px; padding: 0 !important; border-radius: 9px !important; }
+            .stock-actions .btn i { margin: 0; line-height: 1; }
+            #pg-estoque .card { overflow-x: auto; }
+            #pg-estoque table { min-width: 980px; }
+            #pg-estoque thead th { position: sticky; top: 0; z-index: 3; }
+            #pay-modal, #pix-modal, #edit-product-modal { padding: 28px; }
+            #pay-modal > .card { width: 440px !important; max-height: calc(100vh - 56px); overflow-y: auto; }
+            #pix-modal > .card { width: 420px !important; max-height: calc(100vh - 56px); overflow-y: auto; }
+            .edit-product-card { width: 760px; max-height: calc(100vh - 56px); }
+            .edit-product-header { padding: 20px 26px; }
+            .edit-product-body { padding: 24px 26px; }
+            .edit-product-footer { padding: 16px 26px; }
+            .edit-product-footer .btn { min-width: 140px; }
+        }
+
+        @media (min-width: 1500px) {
+            #main { padding-left: 42px; padding-right: 42px; }
+            .page { max-width: 1600px; }
+            .faturamento-grid { grid-template-columns: minmax(0, 1fr) 370px; }
+        }
 
         @media print {
             body * { visibility: hidden; }
@@ -143,7 +185,33 @@
 
         .promo-badge { background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-left: 5px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-    </style>
+    
+        /* LOGIN, USUÁRIOS E PERMISSÕES */
+        #login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#eff6ff,#f8fafc 48%,#e0f2fe);z-index:20000;display:flex;align-items:center;justify-content:center;padding:24px}
+        .login-card{width:min(440px,100%);background:#fff;border:1px solid var(--border);border-radius:22px;padding:34px;box-shadow:0 25px 70px rgba(15,23,42,.16)}
+        .login-logo{display:flex;justify-content:center;margin-bottom:22px}.login-logo img{max-height:92px;max-width:240px;object-fit:contain}
+        .sidebar-user{margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 10px;border-radius:10px;background:#f8fafc;border:1px solid var(--border);font-size:.74rem;font-weight:700;color:var(--text-main)}.sidebar-user button{border:0;background:none;color:var(--danger);cursor:pointer;padding:2px}.sidebar-user small{display:block;color:var(--text-sub);font-size:.62rem;font-weight:600}.login-user-select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 14px center;padding-right:42px}
+        .top-header{position:relative;display:flex!important;align-items:center;justify-content:space-between;margin-bottom:30px;min-height:76px}
+        .header-system-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;pointer-events:none}
+        .header-system-logo img{max-height:70px;width:auto;object-fit:contain}
+        .user-chip{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:14px;font-size:.78rem;font-weight:700;color:var(--text-main)}
+        .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.38);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:12000;padding:24px}
+        .modal-panel{width:min(880px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(15,23,42,.25);padding:28px}
+        .permission-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}.perm-item{display:flex;gap:9px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;background:#f8fafc;font-size:.78rem;font-weight:600}
+        .nav-link.permission-denied{opacity:.62;position:relative}
+        .nav-link.permission-denied::after{content:'\f023';font-family:'Font Awesome 6 Free';font-weight:900;margin-left:auto;font-size:.72rem;opacity:.8}
+        .settings-corner{margin-top:auto;padding-top:14px;border-top:1px solid var(--border)}
+        .settings-toggle{margin-bottom:0}
+        .settings-toggle .settings-chevron{margin-left:auto;width:auto;transition:transform .2s ease}
+        .settings-toggle.open .settings-chevron{transform:rotate(180deg)}
+        .settings-menu{display:none;padding:7px 0 2px 12px}
+        .settings-menu.open{display:block}
+        .settings-menu .nav-link{font-size:.82rem;padding:10px 12px;margin-bottom:4px}
+        .settings-menu .nav-link i{font-size:.95rem}
+        .dev-footer{margin-top:12px!important}
+        .details-box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:12px;font-size:.82rem;line-height:1.6}
+        @media(max-width:1000px){.permission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.header-system-logo{position:static;transform:none}.top-header{display:grid!important;grid-template-columns:1fr auto;gap:12px}.header-system-logo{grid-column:1/-1;grid-row:1}}
+</style>
 </head>
 <body>
 
@@ -187,6 +255,7 @@
         <div class="logo">
             <img src="LOGO COMERCIO/LOGO MT.png" alt="Logo MT Variedades">
             <div class="logo-badge">Painel Administrativo</div>
+            <div class="sidebar-user" id="sidebar-user-box" style="display:none"><i class="fas fa-user-shield" style="color:var(--primary)"></i><div><span id="current-user-label">Usuário</span><small id="current-user-role">Perfil</small></div><button onclick="logoutSistema()" title="Sair"><i class="fas fa-right-from-bracket"></i></button></div>
         </div>
         <button class="nav-link active" onclick="nav('pdv', this)"><i class="fas fa-cash-register"></i> Realizar Venda</button>
         <button class="nav-link" onclick="nav('estoque', this)"><i class="fas fa-boxes-stacked"></i> Estoque Geral</button>
@@ -196,7 +265,17 @@
         <button class="nav-link" onclick="nav('receber', this)"><i class="fas fa-receipt"></i> Contas a Pagar</button>
         <button class="nav-link" onclick="nav('cadastro', this)"><i class="fas fa-plus-circle"></i> Cadastrar Item</button>
         <button class="nav-link" onclick="nav('backup', this)"><i class="fas fa-database"></i> Backup & Segurança</button>
-        <button class="nav-link" onclick="nav('ajustes', this)"><i class="fas fa-palette"></i> Aparência</button>
+
+        <div class="settings-corner">
+            <button class="nav-link settings-toggle" id="settings-toggle" onclick="toggleConfiguracoes(this)">
+                <i class="fas fa-gear"></i> Configurações
+                <i class="fas fa-chevron-up settings-chevron"></i>
+            </button>
+            <div class="settings-menu" id="settings-menu">
+                <button class="nav-link" data-permission="manageUsers" onclick="nav('usuarios', this)"><i class="fas fa-users-gear"></i> Usuários e Permissões</button>
+                <button class="nav-link" data-permission="appearance" onclick="nav('ajustes', this)"><i class="fas fa-palette"></i> Aparência</button>
+            </div>
+        </div>
 
         <div class="dev-footer">
             Desenvolvido por:<br>
@@ -206,20 +285,20 @@
     </aside>
 
     <main id="main">
-        <header style="display:grid; grid-template-columns: 1fr auto 1fr; margin-bottom:30px; align-items: center;">
+        <header class="top-header">
             <h2 id="page-title" style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; color: var(--text-main); text-align: left;">Realizar Venda</h2>
             
-            <div style="display: flex; justify-content: center; align-items: center;">
-                <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <div class="header-system-logo">
+                <div>
                     <img src="LOGO AS/LOGO AS.png" alt="Logo Sistema" style="max-height: 70px; width: auto; object-fit: contain;">
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px; align-items: center; background: white; padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); justify-self: end;">
+            <div style="display:flex;align-items:center;gap:10px;margin-left:auto;"><div style="display: flex; gap: 15px; align-items: center; background: white; padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); justify-self: end;">
                 <div id="live-clock" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">00:00:00</div>
                 <div style="width: 1px; height: 16px; background: var(--border);"></div>
                 <div id="live-date" style="font-size: 0.85rem; font-weight: 600; color: var(--text-sub);">...</div>
-            </div>
+            </div></div>
         </header>
 
         <section id="pg-pdv" class="page active">
@@ -227,7 +306,7 @@
                 <div class="card" style="position: relative;">
                     <div style="position: relative;">
                         <i class="fas fa-search" style="position: absolute; left: 16px; top: 14px; color: var(--text-sub);"></i>
-                        <input type="text" class="search-box" style="padding-left: 45px;" id="pos-search" placeholder="Busque por ID (ex: 0001), Código de Barras ou Nome do item..." onkeyup="handleSearchInput(event)">
+                        <input type="text" class="search-box" style="padding-left: 45px;" id="pos-search" placeholder="Busque por ID (ex: 1 ou 0001), Código de Barras ou Nome do item..." onkeyup="handleSearchInput(event)">
                     </div>
                     <div id="pos-results" style="position:absolute; background:white; width:calc(100% - 50px); z-index:100; border-radius:12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;"></div>
                     
@@ -263,7 +342,7 @@
                     <div class="card-header-title"><i class="fas fa-bullhorn" style="color: var(--danger);"></i> Criar Promoção Temporal</div>
                     
                     <label class="form-label">Digitar/Buscar Produto</label>
-                    <input type="text" id="promo-product-search" class="search-box" placeholder="Digite o ID, Código de Barras ou Nome..." onkeyup="handlePromoSearch(event)">
+                    <input type="text" id="promo-product-search" class="search-box" placeholder="Digite o ID (ex: 1 ou 0001), Código de Barras ou Nome..." onkeyup="handlePromoSearch(event)">
                     <input type="hidden" id="selected-promo-product-id">
                     <div id="promo-search-results" style="position:absolute; background:white; width:calc(100% - 50px); z-index:100; border-radius:12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden;"></div>
 
@@ -291,7 +370,7 @@
         <section id="pg-estoque" class="page">
             <div class="card">
                 <div class="card-header-title"><i class="fas fa-boxes-stacked" style="color: var(--primary);"></i> Controle de Mercadorias e Itens</div>
-                <input type="text" class="search-box" id="stock-search" placeholder="Buscar no estoque por ID, Código de Barras ou Nome do Item..." onkeyup="renderStock()">
+                <input type="text" class="search-box" id="stock-search" placeholder="Buscar por ID (ex: 1 ou 0001), Código de Barras ou Nome..." onkeyup="renderStock()">
                 <table>
                     <thead><tr><th>ID</th><th>Cód. Barras</th><th>Nome do Produto</th><th>Custo Unit.</th><th>Preço Venda</th><th>Estoque</th><th style="text-align: right;">Ações</th></tr></thead>
                     <tbody id="stock-list"></tbody>
@@ -462,6 +541,17 @@
             </div>
         </section>
 
+
+        <section id="pg-usuarios" class="page">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px">
+                    <div class="card-header-title" style="margin:0"><i class="fas fa-users-gear" style="color:var(--primary)"></i> Usuários e permissões</div>
+                    <button class="btn btn-primary" onclick="abrirUsuarioModal()"><i class="fas fa-user-plus"></i> Novo usuário</button>
+                </div>
+                <p style="color:var(--text-sub);font-size:.85rem;margin-bottom:18px">Defina exatamente o que cada operador pode visualizar e alterar.</p>
+                <table><thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead><tbody id="users-list"></tbody></table>
+            </div>
+        </section>
         <section id="pg-ajustes" class="page">
             <div class="card">
                 <div class="card-header-title"><i class="fas fa-palette" style="color: var(--primary);"></i> Ajuste da Identidade de Cor do Sistema</div>
@@ -470,6 +560,61 @@
             </div>
         </section>
     </main>
+
+    <div id="edit-product-modal" role="dialog" aria-modal="true" aria-labelledby="edit-product-title" onclick="if(event.target === this) fecharEdicaoProduto()">
+        <div class="edit-product-card">
+            <div class="edit-product-header">
+                <div>
+                    <h3 id="edit-product-title" style="font-size:1.15rem; font-weight:800; margin-bottom:4px;"><i class="fas fa-pen-to-square" style="color:var(--primary); margin-right:8px;"></i>Editar produto</h3>
+                    <p style="font-size:.78rem; color:var(--text-sub);">Altere todas as informações do item e salve.</p>
+                </div>
+                <button type="button" onclick="fecharEdicaoProduto()" aria-label="Fechar" style="border:none; background:#f1f5f9; width:38px; height:38px; border-radius:10px; cursor:pointer; color:var(--text-sub);"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="edit-product-body">
+                <input type="hidden" id="edit-product-index">
+
+                <label class="form-label">Nome do produto</label>
+                <input type="text" id="edit-product-name" class="search-box" placeholder="Nome do produto">
+
+                <div class="edit-product-grid">
+                    <div>
+                        <label class="form-label">ID visível</label>
+                        <input type="text" id="edit-product-custom-id" class="search-box" inputmode="numeric" placeholder="Ex: 0001">
+                    </div>
+                    <div>
+                        <label class="form-label">Código de barras</label>
+                        <input type="text" id="edit-product-barcode" class="search-box" inputmode="numeric" placeholder="Código de barras">
+                    </div>
+                    <div>
+                        <label class="form-label">Preço de custo (R$)</label>
+                        <input type="number" id="edit-product-cost" class="search-box" min="0" step="0.01" placeholder="0,00">
+                    </div>
+                    <div>
+                        <label class="form-label">Preço de venda (R$)</label>
+                        <input type="number" id="edit-product-sale" class="search-box" min="0" step="0.01" placeholder="0,00">
+                    </div>
+                    <div>
+                        <label class="form-label">Quantidade em estoque</label>
+                        <input type="number" id="edit-product-stock" class="search-box" min="0" step="1" placeholder="0">
+                    </div>
+                    <div>
+                        <label class="form-label">ID interno do sistema</label>
+                        <input type="text" id="edit-product-internal-id" class="search-box" readonly style="background:#f1f5f9; color:var(--text-sub); cursor:not-allowed;">
+                    </div>
+                </div>
+
+                <div style="padding:12px 14px; border-radius:12px; background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; font-size:.78rem; line-height:1.5;">
+                    <i class="fas fa-circle-info" style="margin-right:6px;"></i>O ID interno é protegido porque ele mantém o vínculo do produto com promoções e outras partes do sistema.
+                </div>
+            </div>
+
+            <div class="edit-product-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharEdicaoProduto()"><i class="fas fa-times"></i> Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="salvarEdicaoProduto()"><i class="fas fa-floppy-disk"></i> Salvar alterações</button>
+            </div>
+        </div>
+    </div>
 
     <div id="pay-modal" onkeydown="handleModalKeys(event)" tabindex="0">
         <div class="card" style="width: 420px; border: none; box-shadow: var(--shadow-lg); padding: 30px;">
@@ -517,6 +662,24 @@
         </div>
     </div>
 
+
+    <div id="login-screen">
+      <div class="login-card">
+        <div class="login-logo"><img src="LOGO AS/LOGO AS.png" alt="Logo do sistema"></div>
+        <h2 style="text-align:center;margin-bottom:6px">Acesso ao sistema</h2><p style="text-align:center;color:var(--text-sub);font-size:.85rem;margin-bottom:24px">Entre com seu usuário e senha</p>
+        <label class="form-label">Usuário</label><select id="login-user" class="search-box login-user-select" autocomplete="username"></select>
+        <label class="form-label">Senha</label><input id="login-pass" type="password" class="search-box" autocomplete="current-password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')loginSistema()">
+        <button class="btn btn-primary" style="width:100%;padding:15px" onclick="loginSistema()"><i class="fas fa-right-to-bracket"></i> ENTRAR</button>
+        <p id="login-error" style="display:none;color:var(--danger);text-align:center;font-size:.8rem;margin-top:14px;font-weight:700"></p>
+      </div>
+    </div>
+    <div id="user-modal" class="modal-overlay"><div class="modal-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h3><i class="fas fa-user-gear" style="color:var(--primary)"></i> Cadastro de usuário</h3><button onclick="fecharUsuarioModal()" style="border:0;background:none;font-size:1.2rem;cursor:pointer"><i class="fas fa-xmark"></i></button></div>
+      <input type="hidden" id="usr-index"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px"><div><label class="form-label">Nome completo</label><input id="usr-name" class="search-box"></div><div><label class="form-label">Usuário de acesso</label><input id="usr-login" class="search-box"></div><div><label class="form-label">Senha</label><input id="usr-password" type="password" class="search-box"></div><div><label class="form-label">Perfil</label><select id="usr-role" class="search-box"><option value="operator">Operador</option><option value="manager">Gerente</option><option value="admin">Administrador</option></select></div></div>
+      <label class="form-label">Permissões</label><div id="permission-grid" class="permission-grid"></div>
+      <label class="perm-item" style="width:max-content"><input type="checkbox" id="usr-active" checked> Usuário ativo</label>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px"><button class="btn btn-secondary" onclick="fecharUsuarioModal()">Cancelar</button><button class="btn btn-primary" onclick="salvarUsuario()"><i class="fas fa-save"></i> Salvar usuário</button></div>
+    </div></div>
     <script>
         let prods = JSON.parse(localStorage.getItem('mt_p')) || [];
         let sales = JSON.parse(localStorage.getItem('mt_v')) || [];
@@ -632,27 +795,52 @@
             if(id === 'receber') renderContasReceber();
         }
 
-        // BUSCA UNIVERSAL
+        // BUSCA UNIVERSAL — aceita ID com ou sem zeros à esquerda.
+        function normalizarIdNumerico(valor) {
+            const texto = String(valor ?? '').trim();
+            if (!/^\d+$/.test(texto)) return null;
+            return String(parseInt(texto, 10));
+        }
+
         function localizarProdutoPorChaveUniversal(chave) {
             if (!chave) return null;
-            const chaveLimpa = chave.trim().toLowerCase();
-            return prods.find(p => 
-                (p.customId && p.customId.toLowerCase() === chaveLimpa) || 
-                (p.barcode && p.barcode.toLowerCase() === chaveLimpa) ||
-                (p.id && p.id.toLowerCase() === chaveLimpa) || 
-                (p.nome && p.nome.toLowerCase() === chaveLimpa)
-            );
+            const chaveLimpa = String(chave).trim().toLowerCase();
+            const idBuscado = normalizarIdNumerico(chaveLimpa);
+
+            return prods.find(p => {
+                const customId = String(p.customId || '').trim();
+                const customIdNormalizado = normalizarIdNumerico(customId);
+                return (idBuscado !== null && customIdNormalizado === idBuscado) ||
+                    String(p.barcode || '').trim().toLowerCase() === chaveLimpa ||
+                    String(p.id || '').trim().toLowerCase() === chaveLimpa ||
+                    String(p.nome || '').trim().toLowerCase() === chaveLimpa;
+            });
         }
 
         function filtrarProdutosPorChaveUniversal(chave) {
             if (!chave) return prods;
-            const chaveLimpa = chave.trim().toLowerCase();
-            return prods.filter(p => 
-                (p.customId && p.customId.toLowerCase().includes(chaveLimpa)) || 
-                (p.barcode && p.barcode.toLowerCase().includes(chaveLimpa)) ||
-                (p.id && p.id.toLowerCase().includes(chaveLimpa)) ||
-                (p.nome && p.nome.toLowerCase().includes(chaveLimpa))
-            );
+            const chaveLimpa = String(chave).trim().toLowerCase();
+            const idBuscado = normalizarIdNumerico(chaveLimpa);
+
+            return prods.filter(p => {
+                const customId = String(p.customId || '').trim();
+                const customIdNormalizado = normalizarIdNumerico(customId);
+                const correspondeId = idBuscado !== null && (
+                    customIdNormalizado === idBuscado ||
+                    customIdNormalizado.startsWith(idBuscado)
+                );
+
+                return correspondeId ||
+                    customId.toLowerCase().includes(chaveLimpa) ||
+                    String(p.barcode || '').toLowerCase().includes(chaveLimpa) ||
+                    String(p.id || '').toLowerCase().includes(chaveLimpa) ||
+                    String(p.nome || '').toLowerCase().includes(chaveLimpa);
+            }).sort((a, b) => {
+                if (idBuscado === null) return 0;
+                const aExato = normalizarIdNumerico(a.customId) === idBuscado ? 1 : 0;
+                const bExato = normalizarIdNumerico(b.customId) === idBuscado ? 1 : 0;
+                return bExato - aExato;
+            });
         }
 
         // VERIFICA SE O PRODUTO ESTÁ EM PROMOÇÃO ATIVA
@@ -1098,28 +1286,156 @@
         }
 
         // EXIBIÇÃO ORGANIZADA DO ESTOQUE
+        function escapeHtml(valor) {
+            return String(valor ?? '').replace(/[&<>'"]/g, caractere => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[caractere]);
+        }
+
         function renderStock() {
             const search = document.getElementById('stock-search').value;
             const filtered = filtrarProdutosPorChaveUniversal(search);
-            document.getElementById('stock-list').innerHTML = filtered.map((p) => {
+            const tabela = document.getElementById('stock-list');
+
+            if (!filtered.length) {
+                tabela.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:35px; color:var(--text-sub);"><i class="fas fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:10px;"></i>Nenhum produto encontrado.</td></tr>`;
+                return;
+            }
+
+            tabela.innerHTML = filtered.map((p) => {
                 const i = prods.indexOf(p);
-                const exId = p.customId || "N/A";
-                const exBar = p.barcode || `<span style="color:var(--text-sub); font-style:italic; font-size:0.8rem;">Não definido</span>`;
-                const tagEstoque = p.qtd < 5 ? 'low' : 'normal';
+                const exId = escapeHtml(p.customId || 'N/A');
+                const exBar = p.barcode ? escapeHtml(p.barcode) : `<span style="color:var(--text-sub); font-style:italic; font-size:0.8rem;">Não definido</span>`;
+                const qtd = Number.isFinite(Number(p.qtd)) ? Number(p.qtd) : 0;
+                const custo = Number.isFinite(Number(p.custo)) ? Number(p.custo) : 0;
+                const venda = Number.isFinite(Number(p.venda)) ? Number(p.venda) : 0;
+                const tagEstoque = qtd < 5 ? 'low' : 'normal';
 
                 return `<tr>
                     <td><span style="font-family:monospace; font-weight:700; color:var(--primary); font-size:0.95rem;">${exId}</span></td>
                     <td><span style="font-family:monospace; color:#475569;">${exBar}</span></td>
-                    <td><input type="text" value="${p.nome}" onchange="prods[${i}].nome=this.value;save()" style="border:none; background:transparent; font-weight:600; width:100%; color:var(--text-main);"></td>
-                    <td><input type="number" step="0.01" value="${p.custo}" onchange="prods[${i}].custo=parseFloat(this.value);save();renderStock()" style="border:none; background:transparent; width:75px;"></td>
-                    <td><input type="number" step="0.01" value="${p.venda}" onchange="prods[${i}].venda=parseFloat(this.value);save();renderStock()" style="border:none; background:transparent; width:75px; font-weight:700; color:var(--primary)"></td>
-                    <td><span class="badge-stock ${tagEstoque}"><input type="number" value="${p.qtd}" onchange="prods[${i}].qtd=parseInt(this.value);save();renderStock()" style="border:none; background:transparent; width:45px; font-weight:700; color:inherit; text-align:center;"></span></td>
-                    <td style="text-align:right;"><button onclick="deleteProd(${i})" style="color:var(--danger); background:none; border:none; cursor:pointer; font-size:0.95rem;"><i class="fas fa-trash"></i></button></td>
+                    <td><strong>${escapeHtml(p.nome || 'Produto sem nome')}</strong></td>
+                    <td>R$ ${custo.toFixed(2)}</td>
+                    <td><strong style="color:var(--primary);">R$ ${venda.toFixed(2)}</strong></td>
+                    <td><span class="badge-stock ${tagEstoque}">${qtd}</span></td>
+                    <td>
+                        <div class="stock-actions">
+                            <button class="btn btn-primary" style="width:36px; height:36px; padding:0; border-radius:10px;" onclick="abrirEdicaoProduto(${i})" title="Editar produto" aria-label="Editar produto"><i class="fas fa-pen-to-square"></i></button>
+                            <button class="btn btn-danger" style="padding:7px 10px; font-size:.75rem;" onclick="deleteProd(${i})" title="Excluir produto"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
             }).join('');
         }
 
-        function deleteProd(i) { Swal.fire({ title: 'Excluir Item?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' }).then((res) => { if(res.isConfirmed) { prods.splice(i, 1); save(); renderStock(); } }); }
+        function abrirEdicaoProduto(index) {
+            const produto = prods[index];
+            if (!produto) {
+                Swal.fire('Erro', 'Produto não encontrado.', 'error');
+                return;
+            }
+
+            document.getElementById('edit-product-index').value = index;
+            document.getElementById('edit-product-name').value = produto.nome || '';
+            document.getElementById('edit-product-custom-id').value = produto.customId || '';
+            document.getElementById('edit-product-barcode').value = produto.barcode || '';
+            document.getElementById('edit-product-cost').value = Number(produto.custo) || 0;
+            document.getElementById('edit-product-sale').value = Number(produto.venda) || 0;
+            document.getElementById('edit-product-stock').value = Math.max(0, parseInt(produto.qtd, 10) || 0);
+            document.getElementById('edit-product-internal-id').value = produto.id || '';
+            document.getElementById('edit-product-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('edit-product-name').focus(), 50);
+        }
+
+        function fecharEdicaoProduto() {
+            document.getElementById('edit-product-modal').style.display = 'none';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function salvarEdicaoProduto() {
+            const index = parseInt(document.getElementById('edit-product-index').value, 10);
+            const produto = prods[index];
+            if (!produto) {
+                Swal.fire('Erro', 'Produto não encontrado.', 'error');
+                fecharEdicaoProduto();
+                return;
+            }
+
+            const nome = document.getElementById('edit-product-name').value.trim();
+            const customIdInformado = document.getElementById('edit-product-custom-id').value.trim();
+            const barcode = document.getElementById('edit-product-barcode').value.trim();
+            const custo = Number(document.getElementById('edit-product-cost').value);
+            const venda = Number(document.getElementById('edit-product-sale').value);
+            const qtd = Number(document.getElementById('edit-product-stock').value);
+
+            if (!nome) {
+                Swal.fire('Atenção', 'Informe o nome do produto.', 'warning');
+                return;
+            }
+            if (!/^\d+$/.test(customIdInformado)) {
+                Swal.fire('Atenção', 'O ID visível deve conter somente números.', 'warning');
+                return;
+            }
+
+            const customId = customIdInformado.padStart(4, '0');
+            const idDuplicado = prods.some((p, i) => i !== index && String(p.customId || '').padStart(4, '0') === customId);
+            if (idDuplicado) {
+                Swal.fire('ID já utilizado', `O ID ${customId} já pertence a outro produto.`, 'warning');
+                return;
+            }
+
+            const barcodeDuplicado = barcode && prods.some((p, i) => i !== index && String(p.barcode || '').trim() === barcode);
+            if (barcodeDuplicado) {
+                Swal.fire('Código de barras já utilizado', 'Esse código de barras já pertence a outro produto.', 'warning');
+                return;
+            }
+
+            if (!Number.isFinite(custo) || custo < 0 || !Number.isFinite(venda) || venda < 0 || !Number.isInteger(qtd) || qtd < 0) {
+                Swal.fire('Valores inválidos', 'Custo, preço e estoque devem ser números iguais ou maiores que zero. O estoque deve ser inteiro.', 'warning');
+                return;
+            }
+
+            produto.nome = nome;
+            produto.customId = customId;
+            produto.barcode = barcode;
+            produto.custo = custo;
+            produto.venda = venda;
+            produto.qtd = qtd;
+
+            save();
+            fecharEdicaoProduto();
+            renderStock();
+            Swal.fire({ icon: 'success', title: 'Produto atualizado!', text: `As alterações do item ${customId} foram salvas.`, timer: 1600, showConfirmButton: false });
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.getElementById('edit-product-modal').style.display === 'flex') {
+                fecharEdicaoProduto();
+            }
+        });
+
+        function deleteProd(i) {
+            const produto = prods[i];
+            if (!produto) return;
+            Swal.fire({
+                title: 'Excluir produto?',
+                text: `${produto.customId || ''} - ${produto.nome || 'Produto'}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Sim, excluir',
+                cancelButtonText: 'Cancelar'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    prods.splice(i, 1);
+                    promos = promos.filter(p => p.produtoId !== produto.id);
+                    localStorage.setItem('mt_promos', JSON.stringify(promos));
+                    save();
+                    renderStock();
+                }
+            });
+        }
 
         // FATURAMENTO E PAINEL ANALÍTICO (HISTÓRICO)
         function renderHistory() {
@@ -1279,6 +1595,124 @@
             document.getElementById('print-method').innerText = "FECHAMENTO DE TURNO"; document.getElementById('print-date').innerText = new Date().toLocaleString();
             const area = document.getElementById('print-area'); area.style.display = 'block'; setTimeout(() => { window.print(); area.style.display = 'none'; }, 500);
         }
+
+
+        // ===== CONTROLE DE ACESSO MULTIUSUÁRIO =====
+        const PERMISSION_LABELS={viewSales:'Acessar vendas',viewStock:'Acessar estoque',editStock:'Editar produtos',deleteStock:'Excluir produtos',createProduct:'Cadastrar produtos',viewPromos:'Acessar promoções',managePromos:'Criar/remover promoções',viewReports:'Ver faturamento',deleteSales:'Apagar vendas',printSales:'Imprimir vendas',viewDebts:'Acessar fiado',editDebts:'Editar fiado',receiveDebts:'Receber fiado',viewBills:'Acessar contas',manageBills:'Alterar contas',backup:'Gerar backup',restore:'Restaurar backup',appearance:'Alterar aparência',manageUsers:'Gerenciar usuários'};
+        const ALL_PERMISSIONS=Object.keys(PERMISSION_LABELS);
+        let systemUsers;
+        try { systemUsers = JSON.parse(localStorage.getItem('mt_users') || '[]'); }
+        catch (e) { systemUsers = []; }
+        if (!Array.isArray(systemUsers)) systemUsers = [];
+
+        // Normaliza usuários antigos e garante o Administrador principal sempre disponível.
+        systemUsers = systemUsers.filter(u => u && typeof u === 'object').map((u, index) => ({
+            id: String(u.id || ('USR-' + Date.now() + '-' + index)),
+            name: String(u.name || u.nome || u.username || ('Usuário ' + (index + 1))).trim(),
+            username: String(u.username || u.login || ('usuario' + (index + 1))).trim(),
+            password: String(u.password || u.senha || '1234'),
+            role: ['admin','manager','operator'].includes(u.role) ? u.role : 'operator',
+            active: u.active !== false,
+            permissions: (u.permissions && typeof u.permissions === 'object') ? u.permissions : {}
+        }));
+
+        let principalAdmin = systemUsers.find(u => u.id === 'USR-ADMIN');
+        if (!principalAdmin) principalAdmin = systemUsers.find(u => u.role === 'admin');
+        if (!principalAdmin) {
+            principalAdmin = {id:'USR-ADMIN',name:'Administrador',username:'admin',password:'assistemas2020@',role:'admin',active:true,permissions:{}};
+            systemUsers.unshift(principalAdmin);
+        }
+        principalAdmin.id = 'USR-ADMIN';
+        principalAdmin.name = 'Administrador';
+        principalAdmin.username = principalAdmin.username || 'admin';
+        principalAdmin.password = 'assistemas2020@';
+        principalAdmin.role = 'admin';
+        principalAdmin.active = true;
+        principalAdmin.permissions = Object.fromEntries(ALL_PERMISSIONS.map(k => [k, true]));
+        systemUsers = [principalAdmin, ...systemUsers.filter(u => u !== principalAdmin && u.id !== 'USR-ADMIN')];
+        localStorage.setItem('mt_users', JSON.stringify(systemUsers));
+        let currentUser=null;
+        function hasPermission(p){return !!(currentUser&&(currentUser.role==='admin'||currentUser.permissions?.[p]));}
+        function requirePermission(p,msg='Você não tem permissão para esta ação.'){if(hasPermission(p))return true;Swal.fire('Acesso bloqueado',msg,'warning');return false;}
+        function preencherUsuariosLogin(){
+            const sel=document.getElementById('login-user');
+            if(!sel)return;
+            const ativos=systemUsers.filter(x=>x && x.active!==false && x.id && x.name).sort((a,b)=>{
+                if(a.id==='USR-ADMIN') return -1;
+                if(b.id==='USR-ADMIN') return 1;
+                return a.name.localeCompare(b.name,'pt-BR');
+            });
+            sel.innerHTML=ativos.map(u=>`<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)}</option>`).join('');
+            const admin=ativos.find(u=>u.id==='USR-ADMIN');
+            if(admin) sel.value=admin.id;
+            sel.disabled=ativos.length===0;
+        }
+        function loginSistema(){
+            const select=document.getElementById('login-user');
+            const passInput=document.getElementById('login-pass');
+            const error=document.getElementById('login-error');
+            const userId=String(select?.value||'').trim();
+            const pw=String(passInput?.value||'');
+            let found=systemUsers.find(x=>x&&x.active!==false&&String(x.id)===userId&&String(x.password)===pw);
+
+            // Recuperação garantida do Administrador principal.
+            if(!found&&userId==='USR-ADMIN'&&pw==='assistemas2020@'){
+                let admin=systemUsers.find(x=>x&&x.id==='USR-ADMIN');
+                if(!admin){
+                    admin={id:'USR-ADMIN',name:'Administrador',username:'admin',password:'assistemas2020@',role:'admin',active:true,permissions:{}};
+                    systemUsers.unshift(admin);
+                }
+                admin.name='Administrador';
+                admin.username='admin';
+                admin.password='assistemas2020@';
+                admin.role='admin';
+                admin.active=true;
+                admin.permissions=Object.fromEntries(ALL_PERMISSIONS.map(k=>[k,true]));
+                localStorage.setItem('mt_users',JSON.stringify(systemUsers));
+                found=admin;
+            }
+
+            if(!found){
+                error.textContent='Senha incorreta. Verifique a senha e tente novamente.';
+                error.style.display='block';
+                passInput?.focus();
+                passInput?.select();
+                return;
+            }
+            error.style.display='none';
+            currentUser=found;
+            sessionStorage.setItem('mt_session_user',found.id);
+            document.getElementById('login-screen').style.display='none';
+            aplicarPermissoes();
+        }
+        function logoutSistema(){sessionStorage.removeItem('mt_session_user');location.reload();}
+        function aplicarPermissoes(){document.getElementById('current-user-label').textContent=currentUser.name;document.getElementById('current-user-role').textContent=currentUser.role==='admin'?'Administrador':currentUser.role==='manager'?'Gerente':'Operador';document.getElementById('sidebar-user-box').style.display='flex';const map={pdv:'viewSales',estoque:'viewStock',promocao:'viewPromos',historico:'viewReports',fiado:'viewDebts',receber:'viewBills',cadastro:'createProduct',backup:'backup',usuarios:'manageUsers',ajustes:'appearance'};document.querySelectorAll('.nav-link').forEach(b=>{const m=(b.getAttribute('onclick')||'').match(/nav\('([^']+)'/);if(m&&map[m[1]]){b.style.display='flex';b.classList.toggle('permission-denied',!hasPermission(map[m[1]]));b.title=hasPermission(map[m[1]])?'':'Sem permissão: clique para ver o aviso';}});}
+        function toggleConfiguracoes(btn){const menu=document.getElementById('settings-menu');const open=!menu.classList.contains('open');menu.classList.toggle('open',open);btn.classList.toggle('open',open);}
+        const _oldNav=nav;nav=function(id,el){const map={pdv:'viewSales',estoque:'viewStock',promocao:'viewPromos',historico:'viewReports',fiado:'viewDebts',receber:'viewBills',cadastro:'createProduct',backup:'backup',usuarios:'manageUsers',ajustes:'appearance'};const labels={pdv:'Realizar Venda',estoque:'Estoque Geral',promocao:'Promoções',historico:'Faturamento & Painel',fiado:'Clientes Fiado',receber:'Contas a Pagar',cadastro:'Cadastrar Item',backup:'Backup & Segurança',usuarios:'Usuários e Permissões',ajustes:'Aparência'};if(map[id]&&!requirePermission(map[id],`Seu usuário não tem permissão para acessar “${labels[id]||'esta opção'}”. Solicite a liberação ao administrador.`))return;if(id==='usuarios'||id==='ajustes'){document.getElementById('settings-menu')?.classList.add('open');document.getElementById('settings-toggle')?.classList.add('open');}_oldNav(id,el);if(id==='usuarios')renderUsers();};
+        function abrirUsuarioModal(i=''){if(!requirePermission('manageUsers'))return;document.getElementById('usr-index').value=i;const u=i===''?null:systemUsers[Number(i)];document.getElementById('usr-name').value=u?.name||'';document.getElementById('usr-login').value=u?.username||'';document.getElementById('usr-password').value=u?.password||'';document.getElementById('usr-role').value=u?.role||'operator';document.getElementById('usr-active').checked=u?.active!==false;document.getElementById('permission-grid').innerHTML=ALL_PERMISSIONS.map(k=>`<label class="perm-item"><input type="checkbox" data-perm="${k}" ${u?.permissions?.[k]||u?.role==='admin'?'checked':''}> ${PERMISSION_LABELS[k]}</label>`).join('');document.getElementById('user-modal').style.display='flex';}
+        function fecharUsuarioModal(){document.getElementById('user-modal').style.display='none';}
+        function salvarUsuario(){if(!requirePermission('manageUsers'))return;const i=document.getElementById('usr-index').value;const name=document.getElementById('usr-name').value.trim(),username=document.getElementById('usr-login').value.trim(),password=document.getElementById('usr-password').value;if(!name||!username||!password){Swal.fire('Atenção','Preencha nome, usuário e senha.','warning');return;}if(systemUsers.some((u,x)=>String(x)!==i&&u.username.toLowerCase()===username.toLowerCase())){Swal.fire('Atenção','Este login já existe.','warning');return;}const permissions={};document.querySelectorAll('#permission-grid [data-perm]').forEach(c=>permissions[c.dataset.perm]=c.checked);const obj={id:i===''?'USR-'+Date.now():systemUsers[Number(i)].id,name,username,password,role:document.getElementById('usr-role').value,active:document.getElementById('usr-active').checked,permissions};if(obj.role==='admin')ALL_PERMISSIONS.forEach(k=>obj.permissions[k]=true);if(i==='')systemUsers.push(obj);else systemUsers[Number(i)]=obj;localStorage.setItem('mt_users',JSON.stringify(systemUsers));preencherUsuariosLogin();fecharUsuarioModal();renderUsers();Swal.fire('Salvo','Usuário e permissões atualizados.','success');}
+        function renderUsers(){const t=document.getElementById('users-list');if(!t)return;t.innerHTML=systemUsers.map((u,i)=>`<tr><td><strong>${escapeHtml(u.name)}</strong></td><td>${escapeHtml(u.username)}</td><td>${u.role==='admin'?'Administrador':u.role==='manager'?'Gerente':'Operador'}</td><td>${u.active!==false?'<span style="color:var(--success);font-weight:700">Ativo</span>':'<span style="color:var(--danger);font-weight:700">Bloqueado</span>'}</td><td style="text-align:right"><button class="btn btn-primary" style="padding:7px 10px" onclick="abrirUsuarioModal(${i})"><i class="fas fa-pen"></i></button>${u.id!=='USR-ADMIN'?`<button class="btn btn-danger" style="padding:7px 10px;margin-left:6px" onclick="excluirUsuario(${i})"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join('');}
+        function excluirUsuario(i){if(!requirePermission('manageUsers'))return;Swal.fire({title:'Excluir usuário?',icon:'warning',showCancelButton:true}).then(r=>{if(r.isConfirmed){systemUsers.splice(i,1);localStorage.setItem('mt_users',JSON.stringify(systemUsers));preencherUsuariosLogin();renderUsers();}})}
+        function registrarUsuario(obj){obj.usuarioId=currentUser?.id||'';obj.usuarioNome=currentUser?.name||'Não identificado';return obj;}
+        // registra vendedor em novas vendas
+        const _completeSale=completeSale;completeSale=async function(...args){const before=sales.length;const r=await _completeSale.apply(this,args);if(sales.length>before){Object.assign(sales[sales.length-1],{usuarioId:currentUser?.id||'',usuarioNome:currentUser?.name||'Não identificado'});save();}return r;};
+        const _salvarPromocao=salvarPromocao;salvarPromocao=function(){if(!requirePermission('managePromos'))return;const before=promos.length;_salvarPromocao();if(promos.length){promos[promos.length-1].usuarioNome=currentUser?.name||'Não identificado';promos[promos.length-1].usuarioId=currentUser?.id||'';localStorage.setItem('mt_promos',JSON.stringify(promos));renderPromocoes();}};
+        const _cadastrarDevedorManual=cadastrarDevedorManual;cadastrarDevedorManual=function(){if(!requirePermission('editDebts'))return;const before=debts.length;_cadastrarDevedorManual();if(debts.length>before){debts[debts.length-1].usuarioNome=currentUser?.name||'Não identificado';save();renderDebts();}};
+        const _deleteSale=deleteSale;deleteSale=function(i){if(!requirePermission('deleteSales','Você não pode apagar vendas.'))return;_deleteSale(i);};
+        const _abrirEdicaoProduto=abrirEdicaoProduto;abrirEdicaoProduto=function(i){if(!requirePermission('editStock'))return;_abrirEdicaoProduto(i);};
+        const _deleteProd=deleteProd;deleteProd=function(i){if(!requirePermission('deleteStock'))return;_deleteProd(i);};
+        const _removerPromocao=removerPromocao;removerPromocao=function(i){if(!requirePermission('managePromos'))return;_removerPromocao(i);};
+        const _modificarValorDevedor=modificarValorDevedor;modificarValorDevedor=function(i){if(!requirePermission('editDebts'))return;return _modificarValorDevedor(i);};
+        const _quitalDivida=quitalDivida;quitalDivida=function(i){if(!requirePermission('receiveDebts'))return;const d=debts[i];_quitalDivida(i);if(sales.length){sales[sales.length-1].usuarioNome=currentUser?.name||'Não identificado';save();}};
+        function verDetalhesVenda(i){const s=sales[i];if(!s)return;const itens=(s.detalhesItens||[]).map(x=>`${x.q}x ${escapeHtml(x.nome)} — R$ ${Number(x.v_un||0).toFixed(2)}`).join('<br>')||escapeHtml(s.items||'');Swal.fire({title:'Detalhes da venda',html:`<div class="details-box" style="text-align:left"><b>Data:</b> ${s.d}<br><b>Vendedor:</b> ${escapeHtml(s.usuarioNome||'Registro antigo')}<br><b>Pagamento:</b> ${escapeHtml(s.type||'')}<br><b>Bruto:</b> R$ ${Number(s.bruto||s.t||0).toFixed(2)}<br><b>Desconto:</b> R$ ${Number(s.desc||0).toFixed(2)}<br><b>Total:</b> R$ ${Number(s.t||0).toFixed(2)}<hr style="margin:10px 0"><b>Itens:</b><br>${itens}</div>`,width:620});}
+        // sobrescritas visuais com vendedor e detalhes
+        const _renderPromocoes=renderPromocoes;renderPromocoes=function(){_renderPromocoes();document.querySelectorAll('#promo-list-table tr').forEach((tr,i)=>{const p=promos[i];if(tr&&p){const td=document.createElement('td');td.innerHTML=`<small style="font-weight:700">${escapeHtml(p.usuarioNome||'Registro antigo')}</small>`;tr.insertBefore(td,tr.lastElementChild);}});const h=document.querySelector('#pg-promocao thead tr');if(h&&!h.dataset.usercol){h.insertBefore(Object.assign(document.createElement('th'),{textContent:'Criado por'}),h.lastElementChild);h.dataset.usercol='1';}};
+        const _renderDebts=renderDebts;renderDebts=function(){_renderDebts();document.querySelectorAll('#debt-list tr').forEach((tr,i)=>{const d=debts.filter(x=>x.nome.toLowerCase().includes(document.getElementById('debt-search').value.toLowerCase()))[i];if(d){const td=document.createElement('td');td.textContent=d.usuarioNome||'Registro antigo';tr.insertBefore(td,tr.lastElementChild);}});const h=document.querySelector('#pg-fiado thead tr');if(h&&!h.dataset.usercol){h.insertBefore(Object.assign(document.createElement('th'),{textContent:'Lançado por'}),h.lastElementChild);h.dataset.usercol='1';}};
+        const _renderHistory=renderHistory;renderHistory=function(){_renderHistory();document.querySelectorAll('#hist-list tr').forEach(tr=>{const buttons=tr.querySelector('td:last-child');const del=buttons?.querySelector('button:last-child');if(del){const m=(del.getAttribute('onclick')||'').match(/deleteSale\((\d+)\)/);if(m){const i=Number(m[1]);const s=sales[i];const seller=document.createElement('span');seller.style.cssText='display:block;font-size:.68rem;color:var(--text-sub);margin-bottom:5px';seller.textContent='Vendedor: '+(s?.usuarioNome||'Registro antigo');buttons.prepend(seller);const b=document.createElement('button');b.className='btn btn-secondary';b.style.cssText='padding:5px 9px;font-size:.7rem;margin-right:6px';b.innerHTML='<i class="fas fa-eye"></i>';b.onclick=()=>verDetalhesVenda(i);buttons.insertBefore(b,buttons.querySelector('button'));del.style.display='inline-flex';del.classList.toggle('permission-denied',!hasPermission('deleteSales'));}}});};
+        // sessão
+        window.addEventListener('load',()=>{preencherUsuariosLogin();const sid=sessionStorage.getItem('mt_session_user');const u=systemUsers.find(x=>x.id===sid&&x.active!==false);if(u){currentUser=u;document.getElementById('login-screen').style.display='none';aplicarPermissoes();}else{document.getElementById('login-screen').style.display='flex';setTimeout(()=>document.getElementById('login-pass').focus(),100);}});
+
     </script>
 </body>
 </html>
